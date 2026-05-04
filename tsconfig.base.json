@@ -1,0 +1,39 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@tractor-store-setup/designTokens": [
+        "packages/design-tokens/src/index.ts"
+      ],
+      "@tractor-store-setup/sharedCatalog": [
+        "packages/shared-catalog/src/index.ts"
+      ],
+      "@tractor-store-setup/tsDesignSystem": [
+        "packages/ts-design-system/src/index.ts"
+      ],
+      "mfeCheckout/Routes": [
+        "packages/mfe-checkout/src/app/remote-entry/entry.routes.ts"
+      ],
+      "mfeDecide/Routes": [
+        "packages/mfe-decide/src/app/remote-entry/entry.routes.ts"
+      ],
+      "mfeExplore/Routes": [
+        "packages/mfe-explore/src/app/remote-entry/entry.routes.ts"
+      ]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "mfeCheckout-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "packages/mfe-checkout-e2e/src",
+  "implicitDependencies": ["mfeCheckout"],
+  "// targets": "to see all targets run: nx show project mfeCheckout-e2e --web",
+  "targets": {}
+}

@@ -1,4 +1,4 @@
-package com.tractorstore.infrastructure.config;
+package com.tractorstore.shared.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

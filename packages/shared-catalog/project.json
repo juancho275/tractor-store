@@ -1,0 +1,26 @@
+{
+  "name": "sharedCatalog",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/shared-catalog/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/shared-catalog",
+        "main": "packages/shared-catalog/src/index.ts",
+        "tsConfig": "packages/shared-catalog/tsconfig.lib.json",
+        "assets": ["packages/shared-catalog/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/shared-catalog/jest.config.ts"
+      }
+    }
+  }
+}

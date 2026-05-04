@@ -1,0 +1,44 @@
+<div class="home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__content">
+      <h1 class="hero__title">
+        El tractor que necesitas,<br>
+        <span class="hero__title-highlight">donde lo necesitas.</span>
+      </h1>
+      <p class="hero__subtitle">
+        Encuentra el equipo agrícola ideal para tu terreno.
+        Más de 200 modelos disponibles con entrega a todo el país.
+      </p>
+      <div class="hero__actions">
+        <a routerLink="/explore" class="btn btn--primary">
+          Ver catálogo
+        </a>
+        <a routerLink="/explore/stores" class="btn btn--secondary">
+          Encontrar tienda
+        </a>
+      </div>
+    </div>
+    <div class="hero__image">
+      <span class="hero__emoji">🚜</span>
+    </div>
+  </section>
+
+  <!-- Categorías rápidas -->
+  <section class="categories">
+    <div class="categories__container">
+      <h2 class="categories__title">Explora por categoría</h2>
+      <div class="categories__grid">
+        @for (category of categories; track category.slug) {
+          <a [routerLink]="['/explore', 'category', category.slug]"
+             class="category-card">
+            <span class="category-card__icon">{{ category.icon }}</span>
+            <span class="category-card__name">{{ category.name }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+</div>

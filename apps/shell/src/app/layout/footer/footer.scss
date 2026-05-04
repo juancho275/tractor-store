@@ -1,0 +1,39 @@
+.footer {
+  height: 80px;
+  background-color: var(--color-text-primary);
+  color: var(--color-white);
+
+  &__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  &__brand {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  &__copy {
+    font-size: 13px;
+    color: var(--color-gray-500);
+  }
+
+  &__links {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  &__link {
+    font-size: 13px;
+    color: var(--color-gray-500);
+    text-decoration: none;
+
+    &:hover { color: var(--color-white); }
+  }
+}

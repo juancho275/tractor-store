@@ -12,7 +12,6 @@
     "@angular/platform-browser": "~20.3.0",
     "@angular/platform-browser-dynamic": "~20.3.0",
     "@angular/router": "~20.3.0",
-    "@nx/angular": "^21.6.11",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
   },
@@ -25,6 +24,7 @@
     "@angular/language-service": "~20.3.0",
     "@eslint/js": "^9.8.0",
     "@module-federation/enhanced": "^0.18.0",
+    "@nx/angular": "^21.6.11",
     "@nx/devkit": "21.6.11",
     "@nx/eslint": "21.6.11",
     "@nx/eslint-plugin": "21.6.11",

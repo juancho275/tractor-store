@@ -1,4 +1,14 @@
 import { Route } from '@angular/router';
-import { RemoteEntry } from './entry';
 
-export const remoteRoutes: Route[] = [{ path: '', component: RemoteEntry }];
+/**
+ * Routes exposed by MFE Explore to the Shell App via Module Federation.
+ * The Shell loads these routes lazily at the /explore path.
+ */
+export const remoteRoutes: Route[] = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('../features/catalog/catalog.component')
+        .then(m => m.CatalogComponent),
+  },
+];

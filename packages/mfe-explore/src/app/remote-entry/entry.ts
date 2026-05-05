@@ -1,9 +1,15 @@
 import { Component } from '@angular/core';
-import { NxWelcome } from './nx-welcome';
+import { RouterModule } from '@angular/router';
 
+/**
+ * Remote entry component for MFE Explore.
+ * Acts as the shell container within this micro-frontend.
+ * Loaded by the host Shell App via Module Federation at runtime.
+ */
 @Component({
-  imports: [NxWelcome],
-  selector: 'app-mfeExplore-entry',
-  template: `<app-nx-welcome></app-nx-welcome>`,
+  selector: 'app-mfe-explore-entry',
+  standalone: true,
+  imports: [RouterModule],
+  template: `<router-outlet />`,
 })
-export class RemoteEntry {}
+export class RemoteEntryComponent {}

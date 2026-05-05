@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+/* MFE Explore styles - Design tokens via CSS Custom Properties */
+/* TailwindCSS is processed at the monorepo/shell level */
+
+:root {
+  --color-primary:       #2f855a;
+  --color-primary-hover: #276749;
+  --color-primary-light: #c6f6d5;
+  --color-text-primary:  #111827;
+  --color-text-muted:    #6b7280;
+  --color-bg-primary:    #ffffff;
+  --color-bg-secondary:  #f9fafb;
+  --color-border:        #e5e7eb;
+  --space-2: 8px; --space-3: 12px;
+  --space-4: 16px; --space-6: 24px;
+  --radius-md: 8px; --radius-full: 9999px;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-radius: 8px;
+  --card-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Inter, system-ui, sans-serif; }

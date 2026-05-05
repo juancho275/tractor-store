@@ -1,0 +1,85 @@
+<div class="catalog">
+
+  <!-- Toolbar: búsqueda + filtros -->
+  <div class="catalog__toolbar">
+    <div class="catalog__search">
+      <ts-input
+  placeholder="Buscar tractores..."
+  (valueChange)="onSearch($event)" />
+    </div>
+
+    <div class="catalog__categories">
+      <button
+        class="catalog__cat-btn"
+        [class.catalog__cat-btn--active]="!selectedCategory()"
+        (click)="onClearFilters()">
+        Todos
+      </button>
+      @for (cat of categories(); track trackByCategory($index, cat)) {
+        <button
+          class="catalog__cat-btn"
+          [class.catalog__cat-btn--active]="selectedCategory() === cat.id"
+          (click)="onCategoryClick(cat.id)">
+          {{ cat.name }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Estado: cargando -->
+  @if (loading()) {
+    <div class="catalog__loading">
+      <ts-spinner size="lg" />
+      <p>Cargando productos...</p>
+    </div>
+  }
+
+  <!-- Estado: error -->
+  @else if (error()) {
+    <div class="catalog__error">
+      <span class="catalog__error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button class="catalog__retry" (click)="catalog.loadProducts()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Estado: sin resultados -->
+  @else if (!hasProducts() && !loading()) {
+    <div class="catalog__empty">
+      <span>🔍</span>
+      <p>No encontramos productos con ese criterio.</p>
+      <button class="catalog__retry" (click)="onClearFilters()">
+        Ver todos los productos
+      </button>
+    </div>
+  }
+
+  <!-- Grid de productos -->
+  @else {
+    <div class="catalog__grid">
+      @for (product of products(); track product.id) {
+        <ts-card
+          [productId]="product.id"
+          [name]="product.name"
+          [description]="product.description"
+          [price]="product.basePrice"
+          [imageUrl]="product.imageUrl"
+          [inStock]="true" />
+      }
+    </div>
+  }
+
+  <!-- PAGINACIÓN -->
+  @if (totalPages() > 1) {
+      <ts-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalElements]="catalog.totalElements()"
+        [pageSize]="12"
+        (pageChange)="onPageChange($event)" />
+    }
+
+
+</div>

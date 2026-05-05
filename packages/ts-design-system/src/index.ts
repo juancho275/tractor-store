@@ -1,5 +1,5 @@
 // ============================================
-// TS Design System — Public API
+// TS Design System â€” Public API
 // Export all components for use in MFEs
 // ============================================
 
@@ -17,3 +17,4 @@ export { PriceComponent } from './lib/price/price';
 export { InputComponent } from './lib/input/input';
 
 export { CardComponent } from './lib/card/card';
+export { PaginationComponent } from "./lib/pagination/pagination";

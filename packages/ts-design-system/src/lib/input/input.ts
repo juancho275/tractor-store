@@ -77,6 +77,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() placeholder = '';
   @Input() type = 'text';
   @Input() error = '';
+  @Output() valueChange = new EventEmitter<string>();
 
   value = '';
   isDisabled = false;
@@ -87,6 +88,7 @@ export class InputComponent implements ControlValueAccessor {
     const val = (event.target as HTMLInputElement).value;
     this.value = val;
     this.onChange(val);
+    this.valueChange.emit(val);
   }
 
   writeValue(val: string): void { this.value = val ?? ''; }

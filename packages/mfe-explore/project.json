@@ -73,7 +73,7 @@
         }
       },
       "defaultConfiguration": "development",
-      "dependsOn": ["shell:serve"]
+      "dependsOn": []
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",

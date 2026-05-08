@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "projects": {
+    "ts-design-system": {
+      "projectType": "library",
+      "root": ".",
+      "sourceRoot": "src",
+      "architect": {
+        "build-storybook": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "storybook-static",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.lib.json",
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "ts-design-system"
+}

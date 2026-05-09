@@ -11,7 +11,10 @@
     "src/**/*.spec.ts",
     "src/test-setup.ts",
     "jest.config.ts",
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/**/*.stories.ts",
+    ".storybook/main.ts",
+    ".storybook/preview.ts"
   ],
   "include": ["src/**/*.ts"]
 }

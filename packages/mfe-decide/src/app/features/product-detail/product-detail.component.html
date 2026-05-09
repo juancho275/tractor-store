@@ -1,0 +1,105 @@
+<div class="decide">
+
+  @if (loading()) {
+    <div class="decide__loading">
+      <ts-spinner size="lg" />
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  @else if (error()) {
+    <div class="decide__error">
+      <span>⚠️</span>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  @else if (product()) {
+    <div class="decide__layout">
+
+      <!-- Galería -->
+      <div class="decide__gallery">
+        <div class="decide__image-wrapper">
+          <img
+            [src]="currentImage() || 'https://images.unsplash.com/photo-1592984791259-da6ea0b2f4ca?w=800'"
+            [alt]="product()!.name"
+            class="decide__image" />
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="decide__info">
+
+        <!-- Categoría + nombre -->
+        <div class="decide__header">
+          <h1 class="decide__name">{{ product()!.name }}</h1>
+          <p class="decide__description">{{ product()!.description }}</p>
+        </div>
+
+        <!-- Precio + stock -->
+        <div class="decide__pricing">
+          <ts-price [amount]="currentPrice()" [large]="true" />
+          <ts-badge [variant]="getStockBadgeVariant()">
+            {{ getStockLabel() }}
+          </ts-badge>
+        </div>
+
+        <!-- Variantes -->
+        @if (product()?.variants && product()!.variants.length > 0) {
+          <div class="decide__variants">
+            <h3 class="decide__section-title">Variantes disponibles</h3>
+            <div class="decide__variant-grid">
+              @for (variant of product()!.variants; track variant.id) {
+                <button
+                  class="decide__variant-btn"
+                  [class.decide__variant-btn--selected]="isSelectedVariant(variant)"
+                  [disabled]="!variant.active"
+                  (click)="onVariantSelect(variant)">
+                  <span class="decide__variant-sku">{{ variant.sku }}</span>
+                  @if (variant.attributes['color']) {
+                    <span class="decide__variant-attr">{{ variant.attributes['color'] }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Atributos de la variante seleccionada -->
+        @if (selectedVariant()?.attributes) {
+          <div class="decide__attributes">
+            <h3 class="decide__section-title">Especificaciones</h3>
+            <div class="decide__attr-grid">
+              @for (attr of objectEntries(selectedVariant()!.attributes); track attr[0]) {
+                <div class="decide__attr-item">
+                  <span class="decide__attr-key">{{ attr[0] }}</span>
+                  <span class="decide__attr-value">{{ attr[1] }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- CTA -->
+        <div class="decide__actions">
+          <ts-button
+            variant="primary"
+            size="lg"
+            [disabled]="!isInStock()"
+            [loading]="addingToCart()"
+            (clicked)="onAddToCart()">
+            {{ addedFeedback ? '✓ Agregado al carrito' : 'Agregar al carrito' }}
+          </ts-button>
+
+          @if (!isInStock()) {
+            <p class="decide__out-of-stock-msg">
+              Este producto no está disponible actualmente.
+            </p>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

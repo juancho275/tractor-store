@@ -1,0 +1,28 @@
+[16:38:59.754] [INFO] storybook v10.3.6
+[16:39:00.282] [DEBUG] Getting package.json info for C:/Users/Juancho270/Desktop/tractor-store/package.json...
+[16:39:01.546] [DEBUG] Serving static files from [36mnode_modules/.pnpm/@chromatic-com+storybook@5._e8b67097dd18eec4306d71d4c6b41209/node_modules/@chromatic-com/storybook/assets[39m at [36m/addon-visual-tests-assets[39m
+[16:39:01.555] [INFO] Starting...
+[16:39:01.791] [DEBUG] Starting preview..
+[16:39:01.818] [INFO] Using implicit CSS loaders
+[16:39:02.737] [ERROR] Failed to build the preview
+[16:39:02.738] [ERROR] [38;2;241;97;97mSB_FRAMEWORK_ANGULAR_0001 (AngularLegacyBuildOptionsError): Your Storybook startup script uses a solution that is not supported anymore.
+You must use Angular builder to have an explicit configuration on the project used in angular.json.
+
+Please run 'npx storybook automigrate' to automatically fix your config.
+
+More info: 
+	- https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#angular-drop-support-for-calling-storybook-directly
+	- https://github.com/storybookjs/storybook/tree/next/code/frameworks/angular#how-do-i-migrate-to-an-angular-storybook-builder
+[39m
+    at checkForLegacyBuildOptions (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/@storybook+angular@10.3.6_3cb632bf55054180af82741bf81eec49/node_modules/@storybook/angular/dist/server/framework-preset-angular-cli.js:159:11)
+    at Object.webpackFinal (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/@storybook+angular@10.3.6_3cb632bf55054180af82741bf81eec49/node_modules/@storybook/angular/dist/server/framework-preset-angular-cli.js:93:3)
+    at async Object.webpack (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/@storybook+builder-webpack5_b4b60a8779e66ca8c151d24e3445a316/node_modules/@storybook/builder-webpack5/dist/presets/custom-webpack-preset.js:282:28)
+    at async starter (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/@storybook+builder-webpack5_b4b60a8779e66ca8c151d24e3445a316/node_modules/@storybook/builder-webpack5/dist/index.js:753:16)
+    at async Module.start (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/@storybook+builder-webpack5_b4b60a8779e66ca8c151d24e3445a316/node_modules/@storybook/builder-webpack5/dist/index.js:857:14)
+    at async storybookDevServer (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/storybook@10.3.6_@testing-l_a0591edebcf4539f40ba0e030357b338/node_modules/storybook/dist/core-server/index.js:7503:83)
+    at async buildOrThrow (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/storybook@10.3.6_@testing-l_a0591edebcf4539f40ba0e030357b338/node_modules/storybook/dist/core-server/index.js:4508:12)
+    at async buildDevStandalone (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/storybook@10.3.6_@testing-l_a0591edebcf4539f40ba0e030357b338/node_modules/storybook/dist/core-server/index.js:8033:41)
+    at async withTelemetry (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/storybook@10.3.6_@testing-l_a0591edebcf4539f40ba0e030357b338/node_modules/storybook/dist/_node-chunks/chunk-UYONHJJP.js:225:12)
+    at async dev (file:///C:/Users/Juancho270/Desktop/tractor-store/node_modules/.pnpm/storybook@10.3.6_@testing-l_a0591edebcf4539f40ba0e030357b338/node_modules/storybook/dist/bin/core.js:2736:3)
+[16:39:02.747] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.

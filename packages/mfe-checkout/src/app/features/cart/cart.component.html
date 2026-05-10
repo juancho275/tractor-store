@@ -1,0 +1,135 @@
+<div class="checkout">
+
+  @if (loading()) {
+    <div class="checkout__loading">
+      <ts-spinner size="lg" />
+      <p>Cargando carrito...</p>
+    </div>
+  }
+
+  <!-- Confirmación de orden exitosa -->
+  @else if (order()) {
+    <div class="checkout__success">
+      <div class="checkout__success-icon">✅</div>
+      <h2>¡Pedido confirmado!</h2>
+      <p class="checkout__order-number">
+        Orden <strong>{{ order()!.orderNumber }}</strong>
+      </p>
+      <p class="checkout__success-msg">
+        Recibirás una confirmación en {{ order()!.customerEmail }}
+      </p>
+      <ts-price [amount]="order()!.total" [large]="true" />
+      <a routerLink="/explore" class="checkout__back-btn">
+        Seguir comprando
+      </a>
+    </div>
+  }
+
+  @else {
+    <div class="checkout__layout">
+
+      <!-- Lista de items -->
+      <div class="checkout__items-section">
+        <h2 class="checkout__title">
+          Tu carrito
+          @if (count() > 0) {
+            <span class="checkout__count">({{ count() }} items)</span>
+          }
+        </h2>
+
+        @if (!hasItems()) {
+          <div class="checkout__empty">
+            <span>🛒</span>
+            <p>Tu carrito está vacío</p>
+            <a routerLink="/explore" class="checkout__back-btn">Ver catálogo</a>
+          </div>
+        } @else {
+          <div class="checkout__items">
+            @for (item of items(); track item.id) {
+              <div class="checkout__item">
+                <img [src]="item.imageUrl || 'https://images.unsplash.com/photo-1592984791259-da6ea0b2f4ca?w=100'"
+                     [alt]="item.productName" class="checkout__item-img" />
+                <div class="checkout__item-info">
+                  <h4 class="checkout__item-name">{{ item.productName }}</h4>
+                  <p class="checkout__item-variant">{{ item.variantName }}</p>
+                  <ts-price [amount]="item.unitPrice" />
+                </div>
+                <div class="checkout__item-qty">
+                  <button class="checkout__qty-btn" (click)="onDecrease(item.id, item.quantity)">−</button>
+                  <span class="checkout__qty-value">{{ item.quantity }}</span>
+                  <button class="checkout__qty-btn" (click)="onIncrease(item.id, item.quantity)">+</button>
+                </div>
+                <div class="checkout__item-subtotal">
+                  <ts-price [amount]="item.subtotal" />
+                </div>
+                <button class="checkout__remove-btn" (click)="onRemove(item.id)" title="Eliminar">✕</button>
+              </div>
+            }
+          </div>
+
+          <div class="checkout__total">
+            <span>Total</span>
+            <ts-price [amount]="total()" [large]="true" />
+          </div>
+        }
+      </div>
+
+      <!-- Formulario de pago -->
+      @if (hasItems()) {
+        <div class="checkout__form-section">
+          <h2 class="checkout__title">Datos del pedido</h2>
+
+          <form class="checkout__form" (ngSubmit)="onPlaceOrder()">
+
+            <div class="checkout__field">
+              <label>Nombre completo *</label>
+              <input formControlName="customerName" [formGroup]="form"
+                     placeholder="Juan Pérez"
+                     [class.checkout__input--error]="hasError('customerName')" />
+              @if (hasError('customerName')) {
+                <span class="checkout__error-msg">Nombre requerido (mín. 3 caracteres)</span>
+              }
+            </div>
+
+            <div class="checkout__field">
+              <label>Email *</label>
+              <input formControlName="customerEmail" [formGroup]="form"
+                     type="email" placeholder="juan@ejemplo.com"
+                     [class.checkout__input--error]="hasError('customerEmail')" />
+              @if (hasError('customerEmail')) {
+                <span class="checkout__error-msg">Email válido requerido</span>
+              }
+            </div>
+
+            <div class="checkout__field">
+              <label>Dirección de entrega *</label>
+              <textarea formControlName="shippingAddress" [formGroup]="form"
+                        placeholder="Calle 123 #45-67, Ciudad, Departamento"
+                        rows="3"
+                        [class.checkout__input--error]="hasError('shippingAddress')">
+              </textarea>
+              @if (hasError('shippingAddress')) {
+                <span class="checkout__error-msg">Dirección requerida (mín. 10 caracteres)</span>
+              }
+            </div>
+
+            @if (error()) {
+              <div class="checkout__form-error">⚠️ {{ error() }}</div>
+            }
+
+            <ts-button
+              variant="primary"
+              size="lg"
+              type="submit"
+              [loading]="placing()">
+              Confirmar pedido
+            </ts-button>
+
+          </form>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

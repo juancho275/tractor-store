@@ -12,7 +12,7 @@ export const appRoutes: Route[] = [
       import('mfeExplore/Routes').then((m) => m.remoteRoutes),
   },
   {
-    path: 'decide/:id',
+    path: 'decide',
     loadChildren: () =>
       import('mfeDecide/Routes').then((m) => m.remoteRoutes),
   },

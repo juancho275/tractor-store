@@ -41,17 +41,18 @@ export class CheckoutService {
   constructor(private http: HttpClient) {}
 
   loadCart(): void {
-    this.patch({ loading: true, error: null });
+    // Resetear order al cargar — permite nuevo ciclo de compra
+    this.patch({ loading: true, error: null, order: null });
     this.http.get<Cart>(this.cartApi, {
-      headers: { 'X-Session-Id': this.sessionId }
+        headers: { 'X-Session-Id': this.sessionId }
     }).subscribe({
-      next: (cart) => {
+        next: (cart) => {
         this.patch({ cart, loading: false });
         this.notifyShell(cart.itemCount, cart.total);
-      },
-      error: () => this.patch({ error: 'Error al cargar el carrito.', loading: false }),
+        },
+        error: () => this.patch({ error: 'Error al cargar el carrito.', loading: false }),
     });
-  }
+    }
 
   updateQuantity(itemId: string, quantity: number): void {
     this.http.put<Cart>(`${this.cartApi}/items/${itemId}`, null, {
@@ -93,11 +94,18 @@ export class CheckoutService {
       }))
     };
 
+    
+
     this.http.post<OrderResponse>(this.orderApi, request).subscribe({
       next: (order) => {
-        this.patch({ order, placing: false });
+        // Limpiar carrito en backend tras orden exitosa
+        this.http.delete<Cart>(this.cartApi, {
+            headers: { 'X-Session-Id': this.sessionId }
+        }).subscribe();
+
+        this.patch({ order, placing: false, cart: null });
         this.notifyShell(0, 0);
-      },
+        },
       error: () => this.patch({
         error: 'Error al procesar el pedido. Intenta de nuevo.',
         placing: false,

@@ -76,58 +76,59 @@
 
       <!-- Formulario de pago -->
       @if (hasItems()) {
-        <div class="checkout__form-section">
-          <h2 class="checkout__title">Datos del pedido</h2>
+  <div class="checkout__form-section">
+    <h2 class="checkout__title">Datos del pedido</h2>
 
-          <form class="checkout__form" (ngSubmit)="onPlaceOrder()">
+    <!-- [formGroup] va en el <form>, NO en los inputs -->
+    <form class="checkout__form" [formGroup]="form" (ngSubmit)="onPlaceOrder()">
 
-            <div class="checkout__field">
-              <label>Nombre completo *</label>
-              <input formControlName="customerName" [formGroup]="form"
-                     placeholder="Juan Pérez"
-                     [class.checkout__input--error]="hasError('customerName')" />
-              @if (hasError('customerName')) {
-                <span class="checkout__error-msg">Nombre requerido (mín. 3 caracteres)</span>
-              }
-            </div>
+      <div class="checkout__field">
+        <label>Nombre completo *</label>
+        <input formControlName="customerName"
+               placeholder="Juan Pérez"
+               [class.checkout__input--error]="hasError('customerName')" />
+        @if (hasError('customerName')) {
+          <span class="checkout__error-msg">Nombre requerido (mín. 3 caracteres)</span>
+        }
+      </div>
 
-            <div class="checkout__field">
-              <label>Email *</label>
-              <input formControlName="customerEmail" [formGroup]="form"
-                     type="email" placeholder="juan@ejemplo.com"
-                     [class.checkout__input--error]="hasError('customerEmail')" />
-              @if (hasError('customerEmail')) {
-                <span class="checkout__error-msg">Email válido requerido</span>
-              }
-            </div>
+      <div class="checkout__field">
+        <label>Email *</label>
+        <input formControlName="customerEmail"
+               type="email" placeholder="juan@ejemplo.com"
+               [class.checkout__input--error]="hasError('customerEmail')" />
+        @if (hasError('customerEmail')) {
+          <span class="checkout__error-msg">Email válido requerido</span>
+        }
+      </div>
 
-            <div class="checkout__field">
-              <label>Dirección de entrega *</label>
-              <textarea formControlName="shippingAddress" [formGroup]="form"
-                        placeholder="Calle 123 #45-67, Ciudad, Departamento"
-                        rows="3"
-                        [class.checkout__input--error]="hasError('shippingAddress')">
-              </textarea>
-              @if (hasError('shippingAddress')) {
-                <span class="checkout__error-msg">Dirección requerida (mín. 10 caracteres)</span>
-              }
-            </div>
+      <div class="checkout__field">
+        <label>Dirección de entrega *</label>
+        <textarea formControlName="shippingAddress"
+                  placeholder="Calle 123 #45-67, Ciudad, Departamento"
+                  rows="3"
+                  [class.checkout__input--error]="hasError('shippingAddress')">
+        </textarea>
+        @if (hasError('shippingAddress')) {
+          <span class="checkout__error-msg">Dirección requerida (mín. 10 caracteres)</span>
+        }
+      </div>
 
-            @if (error()) {
-              <div class="checkout__form-error">⚠️ {{ error() }}</div>
-            }
-
-            <ts-button
-              variant="primary"
-              size="lg"
-              type="submit"
-              [loading]="placing()">
-              Confirmar pedido
-            </ts-button>
-
-          </form>
-        </div>
+      @if (error()) {
+        <div class="checkout__form-error">⚠️ {{ error() }}</div>
       }
+
+      <ts-button
+        variant="primary"
+        size="lg"
+        type="submit"
+        [loading]="placing()">
+        Confirmar pedido
+      </ts-button>
+
+    </form>
+  </div>
+}
 
     </div>
   }

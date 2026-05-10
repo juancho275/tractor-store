@@ -57,21 +57,36 @@ export class ProductDetailService {
   constructor(private http: HttpClient) {}
 
   loadProduct(productId: string): void {
-    this.patch({ loading: true, error: null });
+  this.patch({ loading: true, error: null });
 
-    this.http.get<ProductDetail>(`${this.catalogApi}/products/${productId}`)
-      .subscribe({
-        next: (product) => {
-          const firstVariant = product.variants?.[0] ?? null;
-          this.patch({ product, selectedVariant: firstVariant, loading: false });
-          if (firstVariant) this.loadStock(firstVariant.id);
-        },
-        error: () => this.patch({
-          error: 'No se pudo cargar el producto.',
-          loading: false,
-        }),
-      });
-  }
+  this.http.get<ProductDetail>(`${this.catalogApi}/products/${productId}`)
+    .subscribe({
+      next: (product) => {
+        let firstVariant = product.variants?.[0] ?? null;
+
+        // Productos sin variantes: crear una variante sintética
+        if (!firstVariant) {
+          firstVariant = {
+            id: product.id,
+            sku: product.name.replace(/\s+/g, '-').toUpperCase().substring(0, 20),
+            name: product.name + ' - Estándar',
+            price: product.basePrice,
+            imageUrl: product.imageUrl,
+            attributes: {},
+            active: true,
+          };
+        }
+
+        this.patch({ product, selectedVariant: firstVariant, loading: false });
+        // Solo cargar stock si la variante es real (no sintética)
+        if (product.variants?.[0]) this.loadStock(firstVariant.id);
+      },
+      error: () => this.patch({
+        error: 'No se pudo cargar el producto.',
+        loading: false,
+      }),
+    });
+}
 
   selectVariant(variant: ProductVariant): void {
     this.patch({ selectedVariant: variant, stock: null });

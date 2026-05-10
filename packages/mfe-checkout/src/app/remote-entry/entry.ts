@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NxWelcome } from './nx-welcome';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  imports: [NxWelcome],
-  selector: 'app-mfeCheckout-entry',
-  template: `<app-nx-welcome></app-nx-welcome>`,
+  selector: 'app-mfe-checkout-entry',
+  standalone: true,
+  imports: [RouterModule],
+  template: `<router-outlet />`,
 })
-export class RemoteEntry {}
+export class RemoteEntryComponent {}

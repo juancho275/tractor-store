@@ -170,4 +170,29 @@ class OrderServiceTest {
             assertThat(pendingOrder.getStatus()).isEqualTo(OrderStatus.CANCELLED);
         }
     }
+
+    @Nested
+@DisplayName("getOrdersByEmail()")
+class GetOrdersByEmail {
+    @Test
+    @DisplayName("returns orders for customer email")
+    void returnsOrdersByEmail() {
+        when(orderRepository.findByCustomerEmail("juan@test.com"))
+            .thenReturn(List.of(savedOrder));
+
+        var result = orderService.getOrdersByEmail("juan@test.com");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).customerEmail()).isEqualTo("juan@test.com");
+    }
+
+    @Test
+    @DisplayName("returns empty list when no orders for email")
+    void returnsEmptyListWhenNoOrders() {
+        when(orderRepository.findByCustomerEmail("unknown@test.com"))
+            .thenReturn(List.of());
+
+        assertThat(orderService.getOrdersByEmail("unknown@test.com")).isEmpty();
+    }
+}
 }

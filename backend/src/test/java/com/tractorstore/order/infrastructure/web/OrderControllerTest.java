@@ -62,4 +62,31 @@ class OrderControllerTest {
         mockMvc.perform(get("/api/orders/{id}", orderId))
             .andExpect(status().isOk());
     }
+
+    @Test
+    void getOrdersByEmail_returns200() throws Exception {
+        when(orderService.getOrdersByEmail("test@test.com"))
+            .thenReturn(List.of(sampleOrder()));
+
+        mockMvc.perform(get("/api/orders/customer/{email}", "test@test.com"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void confirmOrder_returns200() throws Exception {
+        UUID orderId = UUID.randomUUID();
+        when(orderService.confirmOrder(orderId)).thenReturn(sampleOrder());
+
+        mockMvc.perform(put("/api/orders/{id}/confirm", orderId))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void cancelOrder_returns200() throws Exception {
+        UUID orderId = UUID.randomUUID();
+        when(orderService.cancelOrder(orderId)).thenReturn(sampleOrder());
+
+        mockMvc.perform(put("/api/orders/{id}/cancel", orderId))
+            .andExpect(status().isOk());
+    }
 }

@@ -172,6 +172,19 @@
             <id>report</id>
             <phase>test</phase>
             <goals><goal>report</goal></goals>
+            <configuration>
+                <excludes>
+                    <!-- Entidades JPA sin setters — gestionadas por Hibernate -->
+                    <exclude>**/domain/model/**</exclude>
+                    <!-- Clases de configuración -->
+                    <exclude>**/shared/config/**</exclude>
+                    <!-- DTOs inmutables (Java Records) -->
+                    <exclude>**/application/dto/**</exclude>
+                    <exclude>**/application/event/**</exclude>
+                    <!-- Main application class -->
+                    <exclude>**/TractorStoreApplication.class</exclude>
+                </excludes>
+            </configuration>
           </execution>
           <execution>
             <id>check</id>

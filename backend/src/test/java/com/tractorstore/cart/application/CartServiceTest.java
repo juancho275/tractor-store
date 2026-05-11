@@ -129,6 +129,41 @@ class CartServiceTest {
     }
 
     @Nested
+@DisplayName("removeItem()")
+class RemoveItem {
+    @Test
+    @DisplayName("removes existing item from cart")
+    void removesExistingItem() {
+        UUID itemId = UUID.randomUUID();
+        when(cartRepository.findBySessionIdAndStatus(SESSION_ID, CartStatus.ACTIVE))
+            .thenReturn(Optional.of(cart));
+        when(cartRepository.save(any())).thenReturn(cart);
+
+        CartResponse response = cartService.removeItem(SESSION_ID, itemId);
+
+        verify(cartRepository).save(cart);
+        assertThat(response.sessionId()).isEqualTo(SESSION_ID);
+    }
+}
+
+@Nested
+@DisplayName("updateItemQuantity()")
+class UpdateItemQuantity {
+    @Test
+    @DisplayName("removes item when quantity is zero")
+    void removesItemWhenQuantityZero() {
+        UUID itemId = UUID.randomUUID();
+        when(cartRepository.findBySessionIdAndStatus(SESSION_ID, CartStatus.ACTIVE))
+            .thenReturn(Optional.of(cart));
+        when(cartRepository.save(any())).thenReturn(cart);
+
+        cartService.updateItemQuantity(SESSION_ID, itemId, 0);
+
+        verify(cartRepository).save(cart);
+    }
+}
+
+    @Nested
     @DisplayName("clearCart()")
     class ClearCart {
 

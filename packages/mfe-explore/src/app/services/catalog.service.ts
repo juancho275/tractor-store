@@ -25,7 +25,7 @@ export interface CatalogState {
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/catalog';
+  private readonly apiUrl = 'https://tractor-store-production.up.railway.app/api/catalog';
 
   // ── State as Signals ──────────────────────────────────────────────────────
   private readonly _state = signal<CatalogState>({

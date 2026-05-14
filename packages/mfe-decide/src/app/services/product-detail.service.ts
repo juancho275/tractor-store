@@ -19,9 +19,9 @@ interface DecideState {
 @Injectable({ providedIn: 'root' })
 export class ProductDetailService {
 
-  private readonly catalogApi = 'http://localhost:8080/api/catalog';
-  private readonly inventoryApi = 'http://localhost:8080/api/inventory';
-  private readonly cartApi = 'http://localhost:8080/api/cart';
+  private readonly catalogApi = 'https://tractor-store-production.up.railway.app/api/catalog';
+  private readonly inventoryApi = 'https://tractor-store-production.up.railway.app/api/inventory';
+  private readonly cartApi = 'https://tractor-store-production.up.railway.app/api/cart';
 
   private readonly _state = signal<DecideState>({
     product: null,

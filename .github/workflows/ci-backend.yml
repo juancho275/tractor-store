@@ -215,7 +215,7 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           cd backend
-          railway up --service tractor-store-api
+          railway up --service "tractor-store" --detach
 
   # ── Stage 7: Smoke Tests ─────────────────────────────────────
   smoke-tests:

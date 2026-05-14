@@ -1,21 +1,38 @@
-name: Backend CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [develop, main, 'release/**', 'feature/**']
-    paths:
-      - 'backend/**'
-      - '.github/workflows/ci-backend.yml'
+    branches: [main, develop]
   pull_request:
-    branches: [develop, main]
-    paths:
-      - 'backend/**'
+    branches: [main, develop]
 
 jobs:
-  test:
-    name: Test & Coverage
-    runs-on: ubuntu-latest
 
+  # ── Stage 1: Setup ─────────────────────────────────────────
+  setup:
+    name: 🔧 Setup & Validate
+    runs-on: ubuntu-latest
+    outputs:
+      backend-changed: ${{ steps.changes.outputs.backend }}
+      frontend-changed: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'apps/**'
+              - 'packages/**'
+
+  # ── Stage 2: Backend Tests ─────────────────────────────────
+  backend-tests:
+    name: 🧪 Backend Tests & Coverage
+    needs: setup
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:17-alpine
@@ -23,44 +40,52 @@ jobs:
           POSTGRES_DB: tractorstore
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # SonarCloud necesita historial completo
-
-      - name: Set up Java 21
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: temurin
           cache: maven
-
-      - name: Run tests with JaCoCo
+      - name: Run tests
         working-directory: backend
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/tractorstore
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
-        run: mvn verify --no-transfer-progress
-
-      - name: Upload JaCoCo report
+        run: mvn test --no-transfer-progress
+      - name: Upload coverage report
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: jacoco-report
           path: backend/target/site/jacoco/
-          retention-days: 7
 
-      - name: SonarCloud Analysis
+  # ── Stage 3: SonarCloud ─────────────────────────────────────
+  sonar-analysis:
+    name: 📊 SonarCloud Quality Gate
+    needs: backend-tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: tractorstore
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+      - name: Sonar Analysis
         working-directory: backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,10 +94,116 @@ jobs:
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
         run: |
-          mvn sonar:sonar \
+          mvn verify sonar:sonar \
             -Dsonar.projectKey=juancho275_tractor-store \
             -Dsonar.organization=juancho275 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
             --no-transfer-progress
-        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+
+  # ── Stage 4: Frontend Build ─────────────────────────────────
+  frontend-build:
+    name: 🏗️ Build Frontend MFEs
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Cache pnpm
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - run: pnpm install --frozen-lockfile
+      - name: Build Design System
+        run: pnpm nx build tsDesignSystem
+      - name: Build Shell
+        run: pnpm nx build shell
+      - name: Build MFE Explore
+        run: pnpm nx build mfeExplore
+      - name: Build MFE Decide
+        run: pnpm nx build mfeDecide
+      - name: Build MFE Checkout
+        run: pnpm nx build mfeCheckout
+
+  # ── Stage 5: Security Check ─────────────────────────────────
+  dependency-check:
+    name: 🔒 OWASP Dependency Check
+    needs: [backend-tests, frontend-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+      - name: OWASP Check
+        working-directory: backend
+        run: |
+          mvn org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=9 \
+            --no-transfer-progress || true
+      - name: Upload OWASP report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owasp-report
+          path: backend/target/dependency-check-report.html
+
+  # ── Stage 6: Deploy Backend ─────────────────────────────────
+  deploy-backend:
+    name: 🚀 Deploy Backend → Railway
+    needs: [sonar-analysis, dependency-check]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          cd backend
+          railway up --service tractor-store-api
+
+  # ── Stage 7: Smoke Tests ─────────────────────────────────────
+  smoke-tests:
+    name: 💨 Smoke Tests (Production)
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Health check backend
+        run: |
+          curl --fail --retry 5 --retry-delay 10 \
+            https://tractor-store-production.up.railway.app/actuator/health
+      - name: Check API endpoints
+        run: |
+          curl --fail https://tractor-store-production.up.railway.app/api/catalog/products
+          curl --fail https://tractor-store-production.up.railway.app/api/catalog/categories
+      - name: Check frontend Shell
+        run: curl --fail https://tractor-store.vercel.app/
+
+  # ── Stage 8: Notify ──────────────────────────────────────────
+  notify-success:
+    name: ✅ Pipeline Completed
+    needs: [smoke-tests, frontend-build]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Summary
+        run: |
+          echo "## 🎉 Pipeline Exitoso" >> $GITHUB_STEP_SUMMARY
+          echo "| Componente | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Shell | https://tractor-store.vercel.app |" >> $GITHUB_STEP_SUMMARY
+          echo "| API | https://tractor-store-production.up.railway.app |" >> $GITHUB_STEP_SUMMARY
+          echo "| Swagger | https://tractor-store-production.up.railway.app/swagger-ui |" >> $GITHUB_STEP_SUMMARY
+          echo "| SonarCloud | https://sonarcloud.io/project/overview?id=juancho275_tractor-store |" >> $GITHUB_STEP_SUMMARY

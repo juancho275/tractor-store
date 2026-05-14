@@ -7,6 +7,38 @@ on:
     branches: [main, develop]
 
 jobs:
+  # ── Stage 0: PR Validation ─────────────────────────────────
+  pr-validation:
+    name: ✅ PR Checks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            test
+            docs
+            chore
+            refactor
+            ci
+            release
+          requireScope: false
+
+      - name: Validate branch naming
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ "$BRANCH" =~ ^(feature|fix|hotfix|release|chore)/SCRUM-[0-9]+ ]] || \
+             [[ "$BRANCH" =~ ^(release|develop|main)$ ]]; then
+            echo "✅ Branch name valid: $BRANCH"
+          else
+            echo "❌ Branch '$BRANCH' must follow: feature/SCRUM-XX-description"
+            exit 1
+          fi
 
   # ── Stage 1: Setup ─────────────────────────────────────────
   setup:

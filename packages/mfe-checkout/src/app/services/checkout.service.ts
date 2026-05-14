@@ -20,8 +20,8 @@ interface CheckoutState {
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
 
-  private readonly cartApi  = 'http://localhost:8080/api/cart';
-  private readonly orderApi = 'http://localhost:8080/api/orders';
+  private readonly cartApi  = 'https://tractor-store-production.up.railway.app/api/cart';
+  private readonly orderApi = 'https://tractor-store-production.up.railway.app/api/orders';
 
   private readonly _state = signal<CheckoutState>({
     cart: null, loading: false,

@@ -200,27 +200,10 @@ jobs:
           name: owasp-report
           path: backend/target/dependency-check-report.html
 
-  # ── Stage 6: Deploy Backend ─────────────────────────────────
-  deploy-backend:
-    name: 🚀 Deploy Backend → Railway
-    needs: [sonar-analysis, dependency-check]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          cd backend
-          railway up --service "tractor-store" --detach
-
   # ── Stage 7: Smoke Tests ─────────────────────────────────────
   smoke-tests:
     name: 💨 Smoke Tests (Production)
-    needs: deploy-backend
+    needs: dependency-check
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:

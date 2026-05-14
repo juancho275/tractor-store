@@ -1,0 +1,100 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [develop, main, 'release/**', 'feature/**']
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/ci-frontend.yml'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+
+jobs:
+  build:
+    name: Build MFEs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Design System
+        run: pnpm nx build tsDesignSystem
+
+      - name: Build Shell
+        run: pnpm nx build shell
+
+      - name: Build MFE Explore
+        run: pnpm nx build mfeExplore
+
+      - name: Build MFE Decide
+        run: pnpm nx build mfeDecide
+
+      - name: Build MFE Checkout
+        run: pnpm nx build mfeCheckout
+
+  chromatic:
+    name: Visual Testing (Chromatic)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Storybook
+        run: pnpm exec ng run ts-design-system:build-storybook
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: packages/ts-design-system/storybook-static
+          exitOnceUploaded: true

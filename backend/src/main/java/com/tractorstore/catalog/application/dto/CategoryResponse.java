@@ -1,15 +1,13 @@
 package com.tractorstore.catalog.application.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
-/**
- * DTO for category responses.
- * Uses Java 21 Record for immutability.
- */
+@Schema(description = "Product category")
 public record CategoryResponse(
-    UUID id,
-    String name,
-    String slug,
-    String imageUrl,
-    UUID parentId
+    @Schema(description = "Category unique identifier") UUID id,
+    @Schema(description = "Category display name", example = "Tractores Clásicos") String name,
+    @Schema(description = "URL-friendly slug", example = "clasicos") String slug,
+    @Schema(description = "Category image URL") String imageUrl,
+    @Schema(description = "Parent category UUID, null for top-level") UUID parentId
 ) {}

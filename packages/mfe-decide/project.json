@@ -44,7 +44,13 @@
           "outputHashing": "all",
           "customWebpackConfig": {
             "path": "packages/mfe-decide/webpack.prod.config.ts"
-          }
+          },
+          "fileReplacements": [
+            {
+              "replace": "packages/mfe-decide/src/environments/environment.ts",
+              "with": "packages/mfe-decide/src/environments/environment.prod.ts"
+            }
+          ]
         },
         "development": {
           "buildOptimizer": false,
@@ -72,8 +78,7 @@
           "buildTarget": "mfeDecide:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "dependsOn": ["shell:serve"]
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",

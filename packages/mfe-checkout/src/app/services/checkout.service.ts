@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Cart, CartItem, OrderRequest, OrderResponse } from './checkout.models';
+import { environment } from '../../environments/environment';
 
 interface CheckoutState {
   cart: Cart | null;
@@ -20,8 +21,8 @@ interface CheckoutState {
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
 
-  private readonly cartApi  = 'https://tractor-store-production.up.railway.app/api/cart';
-  private readonly orderApi = 'https://tractor-store-production.up.railway.app/api/orders';
+  private readonly cartApi  = `${environment.apiUrl}/api/cart`;
+  private readonly orderApi = `${environment.apiUrl}/api/orders`;
 
   private readonly _state = signal<CheckoutState>({
     cart: null, loading: false,

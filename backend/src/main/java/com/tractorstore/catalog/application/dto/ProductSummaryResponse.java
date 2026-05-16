@@ -1,19 +1,16 @@
 package com.tractorstore.catalog.application.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * Lightweight DTO for product list/grid views.
- * Used in paginated catalog endpoints to avoid loading variants.
- * Uses Java 21 Record for immutability.
- */
+@Schema(description = "Lightweight product view for catalog grid")
 public record ProductSummaryResponse(
-    UUID id,
-    String name,
-    String description,
-    UUID categoryId,
-    BigDecimal basePrice,
-    String imageUrl,
-    String tags
+    @Schema(description = "Product unique identifier") UUID id,
+    @Schema(description = "Product name") String name,
+    @Schema(description = "Short product description") String description,
+    @Schema(description = "Category UUID") UUID categoryId,
+    @Schema(description = "Base price in COP", example = "150000000") BigDecimal basePrice,
+    @Schema(description = "Product image URL") String imageUrl,
+    @Schema(description = "Comma-separated product tags") String tags
 ) {}

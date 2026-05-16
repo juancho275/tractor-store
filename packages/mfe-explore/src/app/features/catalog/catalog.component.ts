@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { CatalogService } from '../../services/catalog.service';
 import { PaginationComponent } from '../../../../../ts-design-system/src/lib/pagination/pagination';
 import {
@@ -43,11 +44,19 @@ export class CatalogComponent implements OnInit {
   protected readonly totalPages  = this.catalog.totalPages;
   protected readonly currentPage = this.catalog.currentPage;
 
-  constructor(protected readonly catalog: CatalogService) {}
+  constructor(
+    protected readonly catalog: CatalogService,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.catalog.loadCategories();
-    this.catalog.loadProducts();
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (slug) {
+      this.catalog.filterByCategorySlug(slug);
+    } else {
+      this.catalog.loadProducts();
+    }
   }
 
   onCategoryClick(categoryId: string): void {

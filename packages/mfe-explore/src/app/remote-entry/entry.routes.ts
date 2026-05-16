@@ -11,4 +11,10 @@ export const remoteRoutes: Route[] = [
       import('../features/catalog/catalog.component')
         .then(m => m.CatalogComponent),
   },
+  {
+    path: 'category/:slug',
+    loadComponent: () =>
+      import('../features/catalog/catalog.component')
+        .then(m => m.CatalogComponent),
+  },
 ];

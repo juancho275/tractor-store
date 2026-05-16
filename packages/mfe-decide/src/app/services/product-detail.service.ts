@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ProductDetail, ProductVariant, StockInfo } from './product-detail.models';
+import { environment } from '../../environments/environment';
 
 interface DecideState {
   product: ProductDetail | null;
@@ -19,9 +20,9 @@ interface DecideState {
 @Injectable({ providedIn: 'root' })
 export class ProductDetailService {
 
-  private readonly catalogApi = 'https://tractor-store-production.up.railway.app/api/catalog';
-  private readonly inventoryApi = 'https://tractor-store-production.up.railway.app/api/inventory';
-  private readonly cartApi = 'https://tractor-store-production.up.railway.app/api/cart';
+  private readonly catalogApi = `${environment.apiUrl}/api/catalog`;
+  private readonly inventoryApi = `${environment.apiUrl}/api/inventory`;
+  private readonly cartApi = `${environment.apiUrl}/api/cart`;
 
   private readonly _state = signal<DecideState>({
     product: null,

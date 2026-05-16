@@ -44,7 +44,13 @@
           "outputHashing": "all",
           "customWebpackConfig": {
             "path": "packages/mfe-checkout/webpack.prod.config.ts"
-          }
+          },
+          "fileReplacements": [
+            {
+              "replace": "packages/mfe-checkout/src/environments/environment.ts",
+              "with": "packages/mfe-checkout/src/environments/environment.prod.ts"
+            }
+          ]
         },
         "development": {
           "buildOptimizer": false,
@@ -72,8 +78,7 @@
           "buildTarget": "mfeCheckout:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "dependsOn": ["shell:serve"]
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",

@@ -1,5 +1,5 @@
 {
-  "mfeExplore": "https://tractor-store-explore.vercel.app",
-  "mfeDecide": "https://tractor-store-decide.vercel.app",
-  "mfeCheckout": "https://tractor-store-checkout.vercel.app"
+  "mfeExplore":"https://tractor-store-explore.vercel.app/remoteEntry.mjs",
+  "mfeDecide":"https://tractor-store-decide.vercel.app/remoteEntry.mjs",
+  "mfeCheckout":"https://tractor-store-checkout.vercel.app/remoteEntry.mjs"
 }

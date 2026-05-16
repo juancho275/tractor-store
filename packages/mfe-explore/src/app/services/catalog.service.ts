@@ -126,6 +126,14 @@ export class CatalogService {
     this.loadProducts(0);
   }
 
+  filterByCategorySlug(slug: string): void {
+    this.http.get<Category>(`${this.apiUrl}/categories/${slug}`)
+      .subscribe({
+        next: (cat) => this.filterByCategory(cat.id),
+        error: () => this.loadProducts(0),
+      });
+  }
+
   /** Clears all filters and reloads */
   clearFilters(): void {
     this.patch({ selectedCategory: null, searchQuery: '' });

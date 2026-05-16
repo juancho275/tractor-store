@@ -30,6 +30,15 @@ spring:
     virtual:
       enabled: true
 
+  # ===== MAIL =====
+  # Credentials via env vars: SPRING_MAIL_HOST, SPRING_MAIL_USERNAME, SPRING_MAIL_PASSWORD, SPRING_MAIL_FROM
+  # Without SPRING_MAIL_HOST the JavaMailSender bean is not created → console logging only.
+  mail:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+    test-connection: false
+
 # ===== SERVER =====
 server:
   port: 8080
@@ -54,6 +63,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
     try-it-out-enabled: true
+
 
 # ===== LOGGING =====
 logging:

@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ProductSummary, Category } from './catalog.models';
+import { environment } from '../../environments/environment';
 
 export interface CatalogState {
   totalPages: number;
@@ -20,12 +21,11 @@ export interface CatalogState {
  * Fetches data from the Spring Boot Catalog REST API.
  * Each MFE manages its own state locally — no shared global store.
  *
- * @see http://localhost:8080/api/catalog/products
  */
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
 
-  private readonly apiUrl = 'https://tractor-store-production.up.railway.app/api/catalog';
+  private readonly apiUrl = `${environment.apiUrl}/api/catalog`;
 
   // ── State as Signals ──────────────────────────────────────────────────────
   private readonly _state = signal<CatalogState>({

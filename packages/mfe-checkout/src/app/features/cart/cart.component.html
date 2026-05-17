@@ -7,24 +7,6 @@
     </div>
   }
 
-  <!-- Confirmación de orden exitosa -->
-  @else if (order()) {
-    <div class="checkout__success">
-      <div class="checkout__success-icon">✅</div>
-      <h2>¡Pedido confirmado!</h2>
-      <p class="checkout__order-number">
-        Orden <strong>{{ order()!.orderNumber }}</strong>
-      </p>
-      <p class="checkout__success-msg">
-        Recibirás una confirmación en {{ order()!.customerEmail }}
-      </p>
-      <ts-price [amount]="order()!.total" [large]="true" />
-      <a routerLink="/explore" class="checkout__back-btn">
-        Seguir comprando
-      </a>
-    </div>
-  }
-
   @else {
     <div class="checkout__layout">
 

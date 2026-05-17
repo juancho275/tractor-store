@@ -33,6 +33,7 @@ class AuthControllerTest {
     @MockBean com.tractorstore.shared.security.JwtService jwtService;
     @MockBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
     @MockBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private static final AuthResponse SAMPLE_RESPONSE =
         new AuthResponse("eyJhbGciOiJIUzI1NiJ9.sample", "admin@tractorstore.com", "ADMIN", 86400000L);

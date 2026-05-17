@@ -7,13 +7,13 @@ import com.tractorstore.catalog.domain.model.Category;
 import com.tractorstore.catalog.domain.model.Product;
 import com.tractorstore.catalog.domain.repository.CategoryRepository;
 import com.tractorstore.catalog.domain.repository.ProductRepository;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,8 @@ class CatalogServiceTest {
 
     @Mock private ProductRepository productRepository;
     @Mock private CategoryRepository categoryRepository;
-    @InjectMocks private CatalogService catalogService;
+    private final SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    private CatalogService catalogService;
 
     private Product product;
     private Category category;
@@ -51,6 +52,7 @@ class CatalogServiceTest {
 
     @BeforeEach
 void setUp() {
+    catalogService = new CatalogService(productRepository, categoryRepository, meterRegistry);
     productId  = UUID.randomUUID();
     categoryId = UUID.randomUUID();
     pageable   = PageRequest.of(0, 12);

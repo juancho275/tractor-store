@@ -22,10 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
         org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
     })
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
 class InventoryControllerTest {
 
     @Autowired MockMvc mockMvc;
     @MockitoBean InventoryService inventoryService;
+    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
 
     private final UUID variantId = UUID.randomUUID();
 

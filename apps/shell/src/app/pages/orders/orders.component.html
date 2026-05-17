@@ -1,0 +1,82 @@
+<div class="orders-page">
+  <div class="orders-page__container">
+
+    <h1 class="orders-page__title">Mis pedidos</h1>
+
+    @if (loading()) {
+      <div class="orders-page__state">
+        <span class="orders-page__spinner"></span>
+        <p>Cargando tus pedidos...</p>
+      </div>
+    } @else if (error()) {
+      <div class="orders-page__state orders-page__state--error">
+        <span>⚠️</span>
+        <p>{{ error() }}</p>
+      </div>
+    } @else if (orders().length === 0) {
+      <div class="orders-page__empty">
+        <span class="orders-page__empty-icon">📦</span>
+        <h2>Aún no tienes pedidos</h2>
+        <p>Cuando realices una compra, aparecerá aquí.</p>
+        <a routerLink="/explore" class="orders-page__btn">Ver catálogo</a>
+      </div>
+    } @else {
+      <div class="orders-list">
+        @for (order of orders(); track order.id) {
+          <div class="order-card">
+
+            <button class="order-card__header" (click)="toggle(order.id)">
+              <div class="order-card__meta">
+                <span class="order-card__number">{{ order.orderNumber }}</span>
+                <span class="order-card__date">
+                  {{ order.createdAt ? (order.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}
+                </span>
+              </div>
+              <div class="order-card__right">
+                <span class="order-card__status order-card__status--{{ order.status | lowercase }}">
+                  {{ statusLabel(order.status) }}
+                </span>
+                <ts-price [amount]="order.total" />
+                <span class="order-card__chevron" [class.order-card__chevron--open]="isExpanded(order.id)">
+                  ›
+                </span>
+              </div>
+            </button>
+
+            @if (isExpanded(order.id)) {
+              <div class="order-card__body">
+
+                <div class="order-card__items">
+                  @for (item of order.items; track item.productVariantId) {
+                    <div class="order-card__item">
+                      <div class="order-card__item-info">
+                        <span class="order-card__item-name">{{ item.productName }}</span>
+                        <span class="order-card__item-variant">{{ item.variantName }}</span>
+                      </div>
+                      <span class="order-card__item-qty">× {{ item.quantity }}</span>
+                      <ts-price [amount]="item.subtotal" />
+                    </div>
+                  }
+                </div>
+
+                <div class="order-card__footer">
+                  <div class="order-card__detail">
+                    <span class="order-card__detail-label">Dirección de entrega</span>
+                    <span class="order-card__detail-value">{{ order.shippingAddress }}</span>
+                  </div>
+                  <div class="order-card__total">
+                    <span>Total</span>
+                    <ts-price [amount]="order.total" />
+                  </div>
+                </div>
+
+              </div>
+            }
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

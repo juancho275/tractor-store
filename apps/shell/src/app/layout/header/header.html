@@ -22,6 +22,18 @@
       </a>
     </nav>
 
+    <!-- Auth -->
+    <div class="header__auth">
+      @if (isLoggedIn()) {
+        <span class="header__user-email">{{ userEmail() }}</span>
+        <button class="header__auth-btn header__auth-btn--logout" (click)="logout()">
+          Salir
+        </button>
+      } @else {
+        <a routerLink="/auth/login" class="header__auth-btn">Entrar</a>
+      }
+    </div>
+
     <!-- Carrito -->
     <a routerLink="/checkout" class="header__cart">
       <span class="header__cart-icon">🛒</span>

@@ -7,6 +7,16 @@ export const appRoutes: Route[] = [
       import('./pages/home/home').then((m) => m.HomeComponent),
   },
   {
+    path: 'auth/login',
+    loadComponent: () =>
+      import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () =>
+      import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
+  },
+  {
     path: 'explore',
     loadChildren: () =>
       import('mfeExplore/Routes').then((m) => m.remoteRoutes),

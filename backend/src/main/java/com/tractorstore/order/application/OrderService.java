@@ -6,6 +6,7 @@ import com.tractorstore.order.application.event.OrderPlaced;
 import com.tractorstore.order.domain.model.Order;
 import com.tractorstore.order.domain.model.OrderItem;
 import com.tractorstore.order.domain.repository.OrderRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,15 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final MeterRegistry meterRegistry;
     private final AtomicLong orderSequence = new AtomicLong(1000);
 
     public OrderService(OrderRepository orderRepository,
-                        ApplicationEventPublisher eventPublisher) {
+                        ApplicationEventPublisher eventPublisher,
+                        MeterRegistry meterRegistry) {
         this.orderRepository = orderRepository;
         this.eventPublisher = eventPublisher;
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -80,6 +84,10 @@ public class OrderService {
         );
 
         Order saved = orderRepository.save(order);
+
+        meterRegistry.counter("orders.placed",
+            "app", "tractor-store-backend"
+        ).increment();
 
         // Publish domain event — Spring Modulith stores in event_publication
         // and delivers AFTER this transaction commits (Outbox pattern)

@@ -34,11 +34,23 @@ export interface OrderItemRequest {
   quantity: number;
 }
 
+export interface OrderItemResponse {
+  productVariantId: string;
+  productName: string;
+  variantName: string;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+}
+
 export interface OrderResponse {
   id: string;
   orderNumber: string;
   customerEmail: string;
+  customerName: string;
+  items: OrderItemResponse[];
   total: number;
   status: string;
-  createdAt: string;
+  shippingAddress: string;
+  createdAt: string | null;
 }

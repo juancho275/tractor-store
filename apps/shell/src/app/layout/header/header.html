@@ -25,6 +25,11 @@
     <!-- Auth -->
     <div class="header__auth">
       @if (isLoggedIn()) {
+        <a routerLink="/orders"
+           routerLinkActive="header__nav-link--active"
+           class="header__nav-link">
+          Mis pedidos
+        </a>
         <span class="header__user-email">{{ userEmail() }}</span>
         <button class="header__auth-btn header__auth-btn--logout" (click)="logout()">
           Salir

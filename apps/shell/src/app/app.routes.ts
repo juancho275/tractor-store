@@ -18,6 +18,12 @@ export const appRoutes: Route[] = [
       import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
   },
   {
+    path: 'orders',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/orders/orders.component').then((m) => m.OrdersComponent),
+  },
+  {
     path: 'explore',
     loadChildren: () =>
       import('mfeExplore/Routes').then((m) => m.remoteRoutes),

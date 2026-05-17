@@ -5,6 +5,7 @@ import com.tractorstore.catalog.domain.model.Category;
 import com.tractorstore.catalog.domain.model.Product;
 import com.tractorstore.catalog.domain.repository.CategoryRepository;
 import com.tractorstore.catalog.domain.repository.ProductRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,11 +31,14 @@ public class CatalogService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final MeterRegistry meterRegistry;
 
     public CatalogService(ProductRepository productRepository,
-                          CategoryRepository categoryRepository) {
+                          CategoryRepository categoryRepository,
+                          MeterRegistry meterRegistry) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -71,7 +75,7 @@ public class CatalogService {
      * @throws jakarta.persistence.EntityNotFoundException if product not found
      */
     public ProductResponse getProduct(UUID id) {
-        return productRepository
+        ProductResponse product = productRepository
             .findById(id)
             .map(this::toResponse)
             .orElseThrow(() ->
@@ -79,6 +83,8 @@ public class CatalogService {
                     "Product not found with id: " + id
                 )
             );
+        meterRegistry.counter("tractor.catalog.products.viewed", "app", "tractor-store-backend").increment();
+        return product;
     }
 
     /**

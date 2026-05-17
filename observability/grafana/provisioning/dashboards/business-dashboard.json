@@ -1,0 +1,139 @@
+{
+  "uid": "business-dashboard",
+  "title": "Negocio — Tractor Store",
+  "tags": ["business", "tractor-store"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Productos vistos (total)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "tractor_catalog_products_viewed_total",
+          "legendFormat": "Productos vistos"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Items agregados al carrito (total)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "cart_items_added_total",
+          "legendFormat": "Items al carrito"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "orange" }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Órdenes creadas (total)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "orders_placed_total",
+          "legendFormat": "Órdenes creadas"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "green" }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Productos vistos por minuto",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(tractor_catalog_products_viewed_total[1m]) * 60",
+          "legendFormat": "Vistas/min"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Órdenes creadas por hora",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(orders_placed_total[5m]) * 3600",
+          "legendFormat": "Órdenes/hora"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "green" }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Embudo de conversión (tasa actual)",
+      "type": "bargauge",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(tractor_catalog_products_viewed_total[5m])",
+          "legendFormat": "Productos vistos"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(cart_items_added_total[5m])",
+          "legendFormat": "Items al carrito"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(orders_placed_total[5m])",
+          "legendFormat": "Órdenes creadas"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      }
+    }
+  ],
+  "time": { "from": "now-6h", "to": "now" }
+}

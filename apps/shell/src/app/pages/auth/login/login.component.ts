@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../auth/auth.service';
 
 @Component({
@@ -20,10 +20,13 @@ export class LoginComponent {
   protected readonly loading = signal(false);
   protected readonly error   = signal<string | null>(null);
 
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   submit(): void {
@@ -32,7 +35,7 @@ export class LoginComponent {
     this.error.set(null);
 
     this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigateByUrl(this.returnUrl),
       error: () => {
         this.error.set('Credenciales incorrectas. Intenta de nuevo.');
         this.loading.set(false);

@@ -1,0 +1,118 @@
+{
+  "uid": "jvm-dashboard",
+  "title": "JVM — Tractor Store Backend",
+  "tags": ["jvm", "tractor-store"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Heap usado / máximo",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+          "legendFormat": "Usado"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "jvm_memory_max_bytes{area=\"heap\"}",
+          "legendFormat": "Máximo"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "% Heap usado",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "jvm_memory_used_bytes{area=\"heap\"} / jvm_memory_max_bytes{area=\"heap\"} * 100",
+          "legendFormat": "Heap %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Threads activos",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "Threads"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short" }
+      }
+    },
+    {
+      "id": 4,
+      "title": "GC — tiempo por colección",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(jvm_gc_pause_seconds_sum[1m])",
+          "legendFormat": "{{ action }} {{ cause }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "palette-classic" }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "CPU proceso",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "process_cpu_usage",
+          "legendFormat": "CPU uso"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        }
+      }
+    }
+  ],
+  "time": { "from": "now-1h", "to": "now" }
+}

@@ -34,6 +34,7 @@ class CartControllerTest {
     @MockitoBean CartService cartService;
     @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
     @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private static final String SESSION = "test-session-123";
 

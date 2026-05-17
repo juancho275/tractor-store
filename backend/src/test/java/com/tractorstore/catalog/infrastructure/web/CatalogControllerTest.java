@@ -37,6 +37,7 @@ class CatalogControllerTest {
     @MockitoBean CatalogService catalogService;
     @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
     @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private final UUID productId = UUID.randomUUID();
     private final UUID categoryId = UUID.randomUUID();

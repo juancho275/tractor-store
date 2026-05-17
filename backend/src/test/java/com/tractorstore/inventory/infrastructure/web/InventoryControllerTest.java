@@ -29,6 +29,7 @@ class InventoryControllerTest {
     @MockitoBean InventoryService inventoryService;
     @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
     @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private final UUID variantId = UUID.randomUUID();
 

@@ -1,47 +1,41 @@
 package com.tractorstore.shared.config;
 
+import com.tractorstore.shared.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-/**
- * Security configuration for The Tractor Store backend.
- *
- * <p>Current phase: Basic configuration allowing public access to
- * documentation and monitoring endpoints. JWT authentication will
- * be implemented in HU-17 (Spring Security JWT).
- *
- * <p>Public endpoints:
- * <ul>
- *   <li>Swagger UI and OpenAPI docs</li>
- *   <li>Spring Actuator health and info</li>
- * </ul>
- *
- * <p>All API endpoints under /api/** will require JWT authentication
- * once HU-17 is implemented.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /**
-     * Configures the security filter chain.
-     * Stateless session — no HTTP session created.
-     * CSRF disabled (REST API, not form-based).
-     *
-     * @param http the HttpSecurity to configure
-     * @return the configured SecurityFilterChain
-     * @throws Exception if configuration fails
-     */
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          UserDetailsService userDetailsService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.userDetailsService = userDetailsService;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -50,61 +44,58 @@ public class SecurityConfig {
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                // Public — API Documentation
-                .requestMatchers(
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/api-docs/**",
-                    "/api-docs.yaml"
-                ).permitAll()
-                // Public — Monitoring
-                .requestMatchers(
-                    "/actuator/**"
-                ).permitAll()
-                // Public — Auth endpoints (HU-17)
+                // Public — documentation & monitoring
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/api-docs.yaml").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                // Public — auth
                 .requestMatchers("/api/auth/**").permitAll()
+                // Public — catalog (browsing is open)
+                .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
+                // Public — inventory stock queries
+                .requestMatchers(HttpMethod.GET, "/api/inventory/**").permitAll()
+                // Public — cart (session-based, no user identity required)
+                .requestMatchers("/api/cart/**").permitAll()
+                // Public — checkout (POST orders — frontend not yet JWT-aware)
+                .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
+                // Protected — order history and management require authentication
+                .requestMatchers("/api/orders/**").authenticated()
                 // Everything else requires authentication
-                // TODO: HU-17 — enable JWT authentication
-                .anyRequest().permitAll()  // ← temporal: cambiar a authenticated() en HU-17
+                .anyRequest().authenticated()
             );
 
         return http.build();
     }
 
-    /**
-     * CORS configuration — allows requests from Angular MFE apps.
-     * In production, restrict origins to the actual deployed domains.
-     *
-     * @return the CORS configuration source
-     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOriginPatterns(List.of(
-            "http://localhost:*",
-            "https://*.vercel.app"
-        ));
-
-        config.setAllowedMethods(List.of(
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "OPTIONS"
-        ));
-
+        config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://*.vercel.app"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-
         config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 }

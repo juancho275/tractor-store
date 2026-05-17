@@ -46,6 +46,18 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkout.loadCart();
+    this.prefillFromSession();
+  }
+
+  private prefillFromSession(): void {
+    try {
+      const raw = localStorage.getItem('ts-auth-user');
+      if (!raw) return;
+      const user: { email: string } = JSON.parse(raw);
+      if (user.email) {
+        this.form.patchValue({ customerEmail: user.email });
+      }
+    } catch { /* localStorage unavailable */ }
   }
 
   onIncrease(itemId: string, current: number): void {

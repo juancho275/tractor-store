@@ -2,6 +2,7 @@ import { Component, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MFEEvents } from '@tractor-store-setup/sharedCatalog';
 import { CartUpdatedPayload } from '@tractor-store-setup/sharedCatalog';
+import { AuthService } from '../../auth/auth.service';
 
 /**
  * Global Header component for The Tractor Store Shell.
@@ -19,13 +20,12 @@ import { CartUpdatedPayload } from '@tractor-store-setup/sharedCatalog';
   styleUrl: './header.scss',
 })
 export class HeaderComponent {
-  /** Reactive cart item count — updated via CustomEvent from MFE Checkout */
-  protected readonly cartCount = signal(0);
+  protected readonly cartCount  = signal(0);
+  protected readonly showBadge  = computed(() => this.cartCount() > 0);
+  protected readonly isLoggedIn = this.auth.isLoggedIn;
+  protected readonly userEmail  = computed(() => this.auth.currentUser()?.email ?? '');
 
-  /** Show badge only when cart has items */
-  protected readonly showBadge = computed(() => this.cartCount() > 0);
-
-  constructor() {
+  constructor(private auth: AuthService) {
     // Listen for cart updates from MFE Checkout via CustomEvent
     // composed: true allows the event to cross Shadow DOM boundaries
     document.addEventListener(
@@ -44,6 +44,8 @@ export class HeaderComponent {
     const payload = (event as CustomEvent<CartUpdatedPayload>).detail;
     this.cartCount.set(payload.count);
   }
+
+  logout(): void { this.auth.logout(); }
 
   ngOnDestroy(): void {
     document.removeEventListener(

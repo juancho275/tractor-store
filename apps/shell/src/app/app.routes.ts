@@ -1,10 +1,21 @@
 import { Route } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
 
 export const appRoutes: Route[] = [
   {
     path: '',
     loadComponent: () =>
       import('./pages/home/home').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'auth/login',
+    loadComponent: () =>
+      import('./pages/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () =>
+      import('./pages/auth/register/register.component').then((m) => m.RegisterComponent),
   },
   {
     path: 'explore',
@@ -18,6 +29,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'checkout',
+    canActivate: [authGuard],
     loadChildren: () =>
       import('mfeCheckout/Routes').then((m) => m.remoteRoutes),
   },

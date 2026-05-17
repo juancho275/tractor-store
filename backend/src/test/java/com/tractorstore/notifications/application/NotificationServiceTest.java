@@ -71,4 +71,20 @@ class NotificationServiceTest {
         ReflectionTestUtils.setField(service, "from", "test@example.com");
         assertDoesNotThrow(() -> service.sendOrderConfirmation(sampleEvent()));
     }
+
+    @Test
+    @DisplayName("uses Resend HTTP API when api key is set — SMTP is bypassed")
+    void sendOrderConfirmation_withResendApiKey_usesApiNotSmtp() {
+        JavaMailSender mockSender = mock(JavaMailSender.class);
+
+        NotificationService service = new NotificationService(mockSender);
+        ReflectionTestUtils.setField(service, "from", "onboarding@resend.dev");
+        ReflectionTestUtils.setField(service, "resendApiKey", "test-api-key");
+
+        // API call will fail in test env (no real network), but must not throw
+        assertDoesNotThrow(() -> service.sendOrderConfirmation(sampleEvent()));
+
+        // SMTP sender must NOT be touched when API key is configured
+        verifyNoInteractions(mockSender);
+    }
 }

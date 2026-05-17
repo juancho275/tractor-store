@@ -1,5 +1,6 @@
 package com.tractorstore.notifications.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tractorstore.order.application.event.OrderPlaced;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -11,20 +12,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Sends order confirmation emails when an OrderPlaced event is received.
- *
- * <p>Works in two modes:
- * <ul>
- *   <li><b>Dev / no SMTP</b>: logs the full email body to console (no config needed)</li>
- *   <li><b>Prod</b>: sends real email via SMTP configured through Railway env vars</li>
- * </ul>
- *
- * <p>JavaMailSender is injected as optional — when spring.mail.host is not set,
- * Spring Boot does not create the bean and the service gracefully falls back to logging.
- */
 @Service
 public class NotificationService {
 
@@ -35,6 +32,10 @@ public class NotificationService {
     @Value("${spring.mail.from:onboarding@resend.dev}")
     private String from;
 
+    // Set via RESEND_API_KEY env var in Railway — preferred over SMTP
+    @Value("${resend.api.key:}")
+    private String resendApiKey;
+
     public NotificationService(@Autowired(required = false) JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -43,10 +44,42 @@ public class NotificationService {
         String subject = "Order Confirmation #" + event.orderNumber() + " - The Tractor Store";
         logPreview(event);
 
-        if (mailSender != null) {
+        if (resendApiKey != null && !resendApiKey.isEmpty()) {
+            trySendViaResendApi(event.customerEmail(), subject, buildHtmlBody(event));
+        } else if (mailSender != null) {
             trySendEmail(event.customerEmail(), subject, buildHtmlBody(event));
         } else {
-            log.info("[Notifications] SMTP not configured - email preview shown above");
+            log.info("[Notifications] No email transport configured - email preview shown above");
+        }
+    }
+
+    private void trySendViaResendApi(String to, String subject, String htmlBody) {
+        try {
+            String json = new ObjectMapper().writeValueAsString(Map.of(
+                "from", from,
+                "to", List.of(to),
+                "subject", subject,
+                "html", htmlBody
+            ));
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.resend.com/emails"))
+                .header("Authorization", "Bearer " + resendApiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                .timeout(Duration.ofSeconds(30))
+                .build();
+
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200 || response.statusCode() == 201) {
+                log.info("[Notifications] Email sent via Resend API to {}", to);
+            } else {
+                log.warn("[Notifications] Resend API returned {}: {}", response.statusCode(), response.body());
+            }
+        } catch (Exception e) {
+            log.warn("[Notifications] Resend API call failed. Cause: {}", e.getMessage());
         }
     }
 
@@ -94,7 +127,6 @@ public class NotificationService {
         );
     }
 
-    // Full HTML body sent via SMTP — UTF-8 rendered correctly in email clients
     private String buildHtmlBody(OrderPlaced event) {
         StringBuilder rows = new StringBuilder();
         for (OrderPlaced.OrderPlacedItem item : event.items()) {

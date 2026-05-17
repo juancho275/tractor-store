@@ -28,13 +28,17 @@ import static org.mockito.Mockito.*;
 class CartServiceTest {
 
     @Mock private CartRepository cartRepository;
-    @InjectMocks private CartService cartService;
+
+    private final io.micrometer.core.instrument.MeterRegistry meterRegistry =
+        new io.micrometer.core.instrument.simple.SimpleMeterRegistry();
+    private CartService cartService;
 
     private static final String SESSION_ID = "test-session-123";
     private Cart cart;
 
     @BeforeEach
     void setUp() {
+        cartService = new CartService(cartRepository, meterRegistry);
         cart = new Cart();
         cart.setSessionId(SESSION_ID);
     }

@@ -5,6 +5,7 @@ import com.tractorstore.cart.domain.model.Cart;
 import com.tractorstore.cart.domain.model.Cart.CartStatus;
 import com.tractorstore.cart.domain.model.CartItem;
 import com.tractorstore.cart.domain.repository.CartRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,11 @@ import java.util.UUID;
 public class CartService {
 
     private final CartRepository cartRepository;
+    private final MeterRegistry meterRegistry;
 
-    public CartService(CartRepository cartRepository) {
+    public CartService(CartRepository cartRepository, MeterRegistry meterRegistry) {
         this.cartRepository = cartRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -58,7 +61,9 @@ public class CartService {
         item.setQuantity(request.quantity());
         item.setImageUrl(request.imageUrl());
         cart.addItem(item);
-        return toResponse(cartRepository.save(cart));
+        CartResponse response = toResponse(cartRepository.save(cart));
+        meterRegistry.counter("cart.items.added", "app", "tractor-store-backend").increment();
+        return response;
     }
 
     /**

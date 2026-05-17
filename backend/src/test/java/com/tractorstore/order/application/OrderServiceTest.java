@@ -34,13 +34,18 @@ class OrderServiceTest {
 
     @Mock private OrderRepository orderRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
-    @InjectMocks private OrderService orderService;
+
+    private final io.micrometer.core.instrument.MeterRegistry meterRegistry =
+        new io.micrometer.core.instrument.simple.SimpleMeterRegistry();
+    private OrderService orderService;
 
     private CreateOrderRequest validRequest;
     private Order savedOrder;
 
     @BeforeEach
     void setUp() {
+        orderService = new OrderService(orderRepository, eventPublisher, meterRegistry);
+
         validRequest = new CreateOrderRequest(
             "juan@test.com", "Juan Viteri",
             "Calle 123 #45-67, Cali, Valle",

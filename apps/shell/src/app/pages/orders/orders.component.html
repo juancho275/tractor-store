@@ -29,7 +29,7 @@
               <div class="order-card__meta">
                 <span class="order-card__number">{{ order.orderNumber }}</span>
                 <span class="order-card__date">
-                  {{ order.createdAt ? (order.createdAt | date:'dd MMM yyyy, HH:mm':'':'es') : '—' }}
+                  {{ order.createdAt ? (order.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}
                 </span>
               </div>
               <div class="order-card__right">

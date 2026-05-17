@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdersService } from '../../orders/orders.service';
@@ -16,7 +16,7 @@ export class OrdersComponent implements OnInit {
   protected readonly loading = this.ordersService.loading;
   protected readonly error   = this.ordersService.error;
 
-  protected expanded = new Set<string>();
+  private readonly expanded = signal(new Set<string>());
 
   constructor(private ordersService: OrdersService) {}
 
@@ -25,11 +25,15 @@ export class OrdersComponent implements OnInit {
   }
 
   toggle(id: string): void {
-    this.expanded.has(id) ? this.expanded.delete(id) : this.expanded.add(id);
+    this.expanded.update(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   }
 
   isExpanded(id: string): boolean {
-    return this.expanded.has(id);
+    return this.expanded().has(id);
   }
 
   statusLabel(status: string): string {

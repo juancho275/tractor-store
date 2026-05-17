@@ -55,6 +55,9 @@ management:
   endpoint:
     health:
       show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 # ===== OPENAPI / SWAGGER =====
 springdoc:
@@ -77,4 +80,4 @@ logging:
     com.tractorstore: DEBUG
     org.springframework.modulith: DEBUG
   pattern:
-    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss} [%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"

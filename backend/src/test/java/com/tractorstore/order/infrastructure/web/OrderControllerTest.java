@@ -33,6 +33,7 @@ class OrderControllerTest {
     @MockitoBean OrderService orderService;
     @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
     @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     OrderResponse sampleOrder() {
         return new OrderResponse(

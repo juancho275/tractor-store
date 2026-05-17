@@ -4,6 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +46,14 @@ public class GlobalExceptionHandler {
         problem.setTitle("Validation Failed");
         problem.setType(URI.create("/errors/validation"));
         problem.setProperty("errors", errors);
+        return problem;
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ProblemDetail handleAuthenticationFailed(Exception ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        problem.setTitle("Authentication Failed");
+        problem.setType(URI.create("/errors/authentication-failed"));
         return problem;
     }
 

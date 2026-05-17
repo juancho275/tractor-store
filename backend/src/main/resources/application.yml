@@ -65,6 +65,12 @@ springdoc:
     try-it-out-enabled: true
 
 
+# ===== JWT =====
+jwt:
+  # Override in production with a 256-bit+ base64-encoded random key via JWT_SECRET env var
+  secret: ${JWT_SECRET:dGhpcy1pcy1hLXNlY3JldC1rZXktdGhhdC1pcy0yNTYtYml0cy1sb25nLXBsZWFzZS1jaGFuZ2U=}
+  expiration-ms: 86400000  # 24 hours
+
 # ===== LOGGING =====
 logging:
   level:

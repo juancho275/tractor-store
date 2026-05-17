@@ -29,11 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
     }
 )
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
 @DisplayName("CatalogController")
 class CatalogControllerTest {
 
     @Autowired MockMvc mockMvc;
     @MockitoBean CatalogService catalogService;
+    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
 
     private final UUID productId = UUID.randomUUID();
     private final UUID categoryId = UUID.randomUUID();

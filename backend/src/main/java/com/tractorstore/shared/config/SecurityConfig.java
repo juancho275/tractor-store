@@ -58,8 +58,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/inventory/**").permitAll()
                 // Public — cart (session-based, no user identity required)
                 .requestMatchers("/api/cart/**").permitAll()
-                // Public — checkout (POST orders — frontend not yet JWT-aware)
-                .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                 // Protected — order history and management require authentication
                 .requestMatchers("/api/orders/**").authenticated()
                 // Everything else requires authentication

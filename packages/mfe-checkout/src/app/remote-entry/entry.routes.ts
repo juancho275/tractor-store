@@ -7,4 +7,10 @@ export const remoteRoutes: Route[] = [
       import('../features/cart/cart.component')
         .then(m => m.CartComponent),
   },
+  {
+    path: 'confirmation',
+    loadComponent: () =>
+      import('../features/confirmation/order-confirmation.component')
+        .then(m => m.OrderConfirmationComponent),
+  },
 ];

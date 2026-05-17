@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Cart, CartItem, OrderRequest, OrderResponse } from './checkout.models';
 import { environment } from '../../environments/environment';
 
@@ -39,7 +40,7 @@ export class CheckoutService {
   readonly order    = computed(() => this._state().order);
   readonly hasItems = computed(() => (this._state().cart?.items?.length ?? 0) > 0);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   loadCart(): void {
     // Resetear order al cargar — permite nuevo ciclo de compra
@@ -99,14 +100,13 @@ export class CheckoutService {
 
     this.http.post<OrderResponse>(this.orderApi, request).subscribe({
       next: (order) => {
-        // Limpiar carrito en backend tras orden exitosa
         this.http.delete<Cart>(this.cartApi, {
-            headers: { 'X-Session-Id': this.sessionId }
+          headers: { 'X-Session-Id': this.sessionId }
         }).subscribe();
-
         this.patch({ order, placing: false, cart: null });
         this.notifyShell(0, 0);
-        },
+        this.router.navigate(['/checkout/confirmation']);
+      },
       error: () => this.patch({
         error: 'Error al procesar el pedido. Intenta de nuevo.',
         placing: false,

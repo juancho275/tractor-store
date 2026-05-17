@@ -1,0 +1,74 @@
+@if (order(); as o) {
+  <div class="confirmation">
+
+    <div class="confirmation__hero">
+      <div class="confirmation__icon">✅</div>
+      <h1 class="confirmation__title">¡Pedido confirmado!</h1>
+      <p class="confirmation__subtitle">
+        Recibirás un email de confirmación en <strong>{{ o.customerEmail }}</strong>
+      </p>
+      <div class="confirmation__order-number">
+        Orden <span>{{ o.orderNumber }}</span>
+      </div>
+    </div>
+
+    <div class="confirmation__body">
+
+      <!-- Resumen de items -->
+      <div class="confirmation__card">
+        <h2 class="confirmation__card-title">Productos pedidos</h2>
+        <div class="confirmation__items">
+          @for (item of o.items; track item.productVariantId) {
+            <div class="confirmation__item">
+              <div class="confirmation__item-info">
+                <p class="confirmation__item-name">{{ item.productName }}</p>
+                <p class="confirmation__item-variant">{{ item.variantName }}</p>
+              </div>
+              <div class="confirmation__item-qty">× {{ item.quantity }}</div>
+              <div class="confirmation__item-subtotal">
+                <ts-price [amount]="item.subtotal" />
+              </div>
+            </div>
+          }
+        </div>
+        <div class="confirmation__total">
+          <span>Total</span>
+          <ts-price [amount]="o.total" [large]="true" />
+        </div>
+      </div>
+
+      <!-- Datos del envío -->
+      <div class="confirmation__card">
+        <h2 class="confirmation__card-title">Datos del pedido</h2>
+        <div class="confirmation__details">
+          <div class="confirmation__detail">
+            <span class="confirmation__detail-label">Cliente</span>
+            <span class="confirmation__detail-value">{{ o.customerName }}</span>
+          </div>
+          <div class="confirmation__detail">
+            <span class="confirmation__detail-label">Email</span>
+            <span class="confirmation__detail-value">{{ o.customerEmail }}</span>
+          </div>
+          <div class="confirmation__detail">
+            <span class="confirmation__detail-label">Dirección de entrega</span>
+            <span class="confirmation__detail-value">{{ o.shippingAddress }}</span>
+          </div>
+          <div class="confirmation__detail">
+            <span class="confirmation__detail-label">Estado</span>
+            <span class="confirmation__status confirmation__status--{{ o.status | lowercase }}">
+              {{ o.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="confirmation__actions">
+      <a routerLink="/explore" class="confirmation__btn confirmation__btn--primary">
+        Seguir comprando
+      </a>
+    </div>
+
+  </div>
+}

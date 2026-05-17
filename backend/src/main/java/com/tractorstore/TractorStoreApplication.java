@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *   <li>{@code cart}        - Shopping cart sessions</li>
  *   <li>{@code order}       - Order lifecycle management</li>
  *   <li>{@code notifications} - Event-driven notifications</li>
+ *   <li>{@code payment}       - Payment simulation (PENDING → CONFIRMED via Outbox)</li>
  * </ul>
  *
  * <p>Modules communicate exclusively via Domain Events (Spring Modulith).

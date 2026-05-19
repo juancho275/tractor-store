@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrderService implements OrderConfirmationApi {
 
     private static final String APP_TAG = "tractor-store-backend";
+    private static final String ORDER_NOT_FOUND = ORDER_NOT_FOUND;
 
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -113,14 +114,14 @@ public class OrderService implements OrderConfirmationApi {
     public OrderResponse getOrder(UUID id) {
         return orderRepository.findById(id)
             .map(this::toResponse)
-            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + id));
     }
 
     public OrderResponse getOrderByNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber)
             .map(this::toResponse)
             .orElseThrow(() -> new EntityNotFoundException(
-                "Order not found: " + orderNumber));
+                ORDER_NOT_FOUND + orderNumber));
     }
 
     public List<OrderResponse> getOrdersByEmail(String email) {
@@ -132,7 +133,7 @@ public class OrderService implements OrderConfirmationApi {
     @Transactional
     public void processPaymentConfirmation(UUID id) {
         Order order = orderRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + id));
         order.confirm();
         orderRepository.save(order);
     }
@@ -140,7 +141,7 @@ public class OrderService implements OrderConfirmationApi {
     @Transactional
     public OrderResponse confirmOrder(UUID id) {
         Order order = orderRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + id));
         order.confirm();
         return toResponse(orderRepository.save(order));
     }
@@ -148,7 +149,7 @@ public class OrderService implements OrderConfirmationApi {
     @Transactional
     public OrderResponse cancelOrder(UUID id) {
         Order order = orderRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + id));
         order.cancel();
         return toResponse(orderRepository.save(order));
     }

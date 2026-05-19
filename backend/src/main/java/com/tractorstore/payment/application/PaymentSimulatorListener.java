@@ -4,6 +4,7 @@ import com.tractorstore.order.OrderConfirmationApi;
 import com.tractorstore.order.application.event.OrderPlaced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ public class PaymentSimulatorListener {
     private final OrderConfirmationApi orderConfirmationApi;
     private final int paymentDelayMs;
 
+    @Autowired
     public PaymentSimulatorListener(OrderConfirmationApi orderConfirmationApi) {
         this(orderConfirmationApi, DEFAULT_PAYMENT_DELAY_MS);
     }

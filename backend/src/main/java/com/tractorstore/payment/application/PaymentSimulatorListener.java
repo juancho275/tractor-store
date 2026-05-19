@@ -21,18 +21,24 @@ import org.springframework.stereotype.Component;
 public class PaymentSimulatorListener {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentSimulatorListener.class);
-    private static final int PAYMENT_DELAY_MS = 10_000;
+    static final int DEFAULT_PAYMENT_DELAY_MS = 10_000;
 
     private final OrderConfirmationApi orderConfirmationApi;
+    private final int paymentDelayMs;
 
     public PaymentSimulatorListener(OrderConfirmationApi orderConfirmationApi) {
+        this(orderConfirmationApi, DEFAULT_PAYMENT_DELAY_MS);
+    }
+
+    PaymentSimulatorListener(OrderConfirmationApi orderConfirmationApi, int paymentDelayMs) {
         this.orderConfirmationApi = orderConfirmationApi;
+        this.paymentDelayMs = paymentDelayMs;
     }
 
     @ApplicationModuleListener
     public void on(OrderPlaced event) throws InterruptedException {
         log.info("[payment-sim] Iniciando procesamiento de pago para orden {} ...", event.orderNumber());
-        Thread.sleep(PAYMENT_DELAY_MS);
+        Thread.sleep(paymentDelayMs);
         orderConfirmationApi.processPaymentConfirmation(event.orderId());
         log.info("[payment-sim] Pago aprobado. Orden {} confirmada.", event.orderNumber());
     }

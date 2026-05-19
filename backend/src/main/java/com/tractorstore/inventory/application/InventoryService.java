@@ -141,9 +141,14 @@ public class InventoryService {
 
     private StockResponse toResponse(Stock stock) {
         int available = stock.getAvailable();
-        StockStatus status = available == 0 ? StockStatus.OUT_OF_STOCK
-            : available <= 5 ? StockStatus.LOW_STOCK
-            : StockStatus.IN_STOCK;
+        StockStatus status;
+        if (available == 0) {
+            status = StockStatus.OUT_OF_STOCK;
+        } else if (available <= 5) {
+            status = StockStatus.LOW_STOCK;
+        } else {
+            status = StockStatus.IN_STOCK;
+        }
 
         return new StockResponse(
             stock.getProductVariantId(),

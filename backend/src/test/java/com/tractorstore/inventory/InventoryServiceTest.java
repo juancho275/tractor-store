@@ -1,4 +1,4 @@
-package com.tractorstore.inventory.application;
+package com.tractorstore.inventory;
 
 import com.tractorstore.inventory.application.dto.StockResponse;
 import com.tractorstore.inventory.application.dto.StockResponse.StockStatus;
@@ -111,7 +111,7 @@ class InventoryServiceTest {
                 .thenReturn(Optional.of(stock));
             when(stockRepository.save(any(Stock.class))).thenReturn(stock);
 
-            StockResponse response = inventoryService.reserve(variantId, 5);
+            inventoryService.reserve(variantId, 5);
 
             verify(stockRepository).save(stock);
             assertThat(stock.getReserved()).isEqualTo(5);

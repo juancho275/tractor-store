@@ -90,7 +90,7 @@ class CartServiceTest {
                 new BigDecimal("45000000"), 1, null
             );
 
-            CartResponse response = cartService.addItem(SESSION_ID, request);
+            cartService.addItem(SESSION_ID, request);
 
             assertThat(cart.getItems()).hasSize(1);
             assertThat(cart.getItems().get(0).getProductName()).isEqualTo("TractorPro X200");

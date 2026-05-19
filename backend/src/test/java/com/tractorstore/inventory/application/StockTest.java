@@ -1,4 +1,4 @@
-package com.tractorstore.inventory.domain.model;
+package com.tractorstore.inventory.application;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

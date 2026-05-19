@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Transactional(readOnly = true)
 public class OrderService implements OrderConfirmationApi {
 
+    private static final String APP_TAG = "tractor-store-backend";
+
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final MeterRegistry meterRegistry;
@@ -87,7 +89,7 @@ public class OrderService implements OrderConfirmationApi {
         Order saved = orderRepository.save(order);
 
         meterRegistry.counter("orders.placed",
-            "app", "tractor-store-backend"
+            "app", APP_TAG
         ).increment();
 
         // Publish domain event — Spring Modulith stores in event_publication

@@ -33,7 +33,7 @@ public class PaymentSimulatorListener {
     public void on(OrderPlaced event) throws InterruptedException {
         log.info("[payment-sim] Iniciando procesamiento de pago para orden {} ...", event.orderNumber());
         Thread.sleep(PAYMENT_DELAY_MS);
-        orderConfirmationApi.confirmOrder(event.orderId());
+        orderConfirmationApi.processPaymentConfirmation(event.orderId());
         log.info("[payment-sim] Pago aprobado. Orden {} confirmada.", event.orderNumber());
     }
 }

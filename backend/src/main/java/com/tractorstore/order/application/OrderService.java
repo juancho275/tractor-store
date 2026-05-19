@@ -126,6 +126,15 @@ public class OrderService implements OrderConfirmationApi {
             .stream().map(this::toResponse).toList();
     }
 
+    @Override
+    @Transactional
+    public void processPaymentConfirmation(UUID id) {
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+        order.confirm();
+        orderRepository.save(order);
+    }
+
     @Transactional
     public OrderResponse confirmOrder(UUID id) {
         Order order = orderRepository.findById(id)

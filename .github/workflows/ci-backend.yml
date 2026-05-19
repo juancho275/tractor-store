@@ -206,7 +206,6 @@ jobs:
     needs: dependency-check
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    continue-on-error: true
     steps:
       - name: Health check backend
         run: |

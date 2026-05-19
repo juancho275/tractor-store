@@ -88,7 +88,8 @@ class AuthServiceTest {
     void register_duplicateEmail_throwsIllegalArgumentException() {
         when(userRepository.existsByEmail(EMAIL)).thenReturn(true);
 
-        assertThatThrownBy(() -> authService.register(new RegisterRequest(EMAIL, PASSWORD)))
+        RegisterRequest req = new RegisterRequest(EMAIL, PASSWORD);
+        assertThatThrownBy(() -> authService.register(req))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Email already registered");
     }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,13 +27,13 @@ class AuthControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
-    @MockBean AuthService authService;
+    @MockitoBean AuthService authService;
 
     // JwtAuthenticationFilter and JwtService are in SecurityConfig — must be mocked for @WebMvcTest
-    @MockBean com.tractorstore.shared.security.JwtService jwtService;
-    @MockBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
-    @MockBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-    @MockBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
+    @MockitoBean com.tractorstore.shared.security.JwtService jwtService;
+    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private static final AuthResponse SAMPLE_RESPONSE =
         new AuthResponse("eyJhbGciOiJIUzI1NiJ9.sample", "admin@tractorstore.com", "ADMIN", 86400000L);

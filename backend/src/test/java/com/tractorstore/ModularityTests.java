@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
+
 /**
  * Spring Modulith architecture verification test.
  *
@@ -27,9 +29,10 @@ class ModularityTests {
 
     @Test
     void generateDocumentation() {
-        // Genera documentación de la arquitectura modular
-        new Documenter(modules)
-            .writeModulesAsPlantUml()
-            .writeIndividualModulesAsPlantUml();
+        assertThatNoException().isThrownBy(() ->
+            new Documenter(modules)
+                .writeModulesAsPlantUml()
+                .writeIndividualModulesAsPlantUml()
+        );
     }
 }

@@ -70,16 +70,19 @@ public class NotificationService {
                 .timeout(Duration.ofSeconds(30))
                 .build();
 
-            HttpResponse<String> response = HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200 || response.statusCode() == 201) {
-                log.info("[Notifications] Email sent via Resend API to {}", to);
-            } else {
-                log.warn("[Notifications] Resend API returned {}: {}", response.statusCode(), response.body());
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200 || response.statusCode() == 201) {
+                    log.info("[Notifications] Email sent via Resend API to {}", to);
+                } else if (log.isWarnEnabled()) {
+                    log.warn("[Notifications] Resend API returned {}: {}", response.statusCode(), response.body());
+                }
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("[Notifications] Resend API call interrupted", e);
         } catch (Exception e) {
-            log.warn("[Notifications] Resend API call failed. Cause: {}", e.getMessage());
+            log.warn("[Notifications] Resend API call failed", e);
         }
     }
 
@@ -94,12 +97,13 @@ public class NotificationService {
             mailSender.send(message);
             log.info("[Notifications] Email sent successfully to {}", to);
         } catch (Exception e) {
-            log.warn("[Notifications] SMTP send failed - email preview shown in logs. Cause: {}", e.getMessage());
+            log.warn("[Notifications] SMTP send failed - email preview shown in logs", e);
         }
     }
 
     // ASCII-safe log preview — avoids encoding issues on Windows consoles
     private void logPreview(OrderPlaced event) {
+        if (!log.isInfoEnabled()) return;
         StringBuilder items = new StringBuilder();
         for (OrderPlaced.OrderPlacedItem item : event.items()) {
             BigDecimal subtotal = item.unitPrice().multiply(BigDecimal.valueOf(item.quantity()));

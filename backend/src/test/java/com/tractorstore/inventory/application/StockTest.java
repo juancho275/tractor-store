@@ -1,5 +1,6 @@
 package com.tractorstore.inventory.application;
 
+import com.tractorstore.inventory.domain.model.Stock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

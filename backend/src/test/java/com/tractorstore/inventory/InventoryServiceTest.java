@@ -1,5 +1,6 @@
 package com.tractorstore.inventory;
 
+import com.tractorstore.inventory.application.InventoryService;
 import com.tractorstore.inventory.application.dto.StockResponse;
 import com.tractorstore.inventory.application.dto.StockResponse.StockStatus;
 import com.tractorstore.inventory.application.dto.StockUpdateRequest;

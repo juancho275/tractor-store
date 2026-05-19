@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrderService implements OrderConfirmationApi {
 
     private static final String APP_TAG = "tractor-store-backend";
-    private static final String ORDER_NOT_FOUND = ORDER_NOT_FOUND;
+    private static final String ORDER_NOT_FOUND = "Order not found: ";
 
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;

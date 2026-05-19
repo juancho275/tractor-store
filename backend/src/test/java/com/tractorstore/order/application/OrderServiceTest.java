@@ -177,6 +177,40 @@ class OrderServiceTest {
     }
 
     @Nested
+    @DisplayName("processPaymentConfirmation()")
+    class ProcessPaymentConfirmation {
+
+        @Test
+        @DisplayName("confirms order via payment interface")
+        void confirmsOrderViaPaymentInterface() {
+            UUID orderId = UUID.randomUUID();
+            Order pendingOrder = new Order();
+            pendingOrder.setOrderNumber("TS-33333-1001");
+            pendingOrder.setCustomerEmail("test@test.com");
+            pendingOrder.setItems(List.of());
+            pendingOrder.setTotal(BigDecimal.ZERO);
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(pendingOrder));
+            when(orderRepository.save(any())).thenReturn(pendingOrder);
+
+            orderService.processPaymentConfirmation(orderId);
+
+            assertThat(pendingOrder.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
+            verify(orderRepository).save(pendingOrder);
+        }
+
+        @Test
+        @DisplayName("throws exception when order not found via payment interface")
+        void throwsExceptionWhenOrderNotFound() {
+            UUID orderId = UUID.randomUUID();
+            when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> orderService.processPaymentConfirmation(orderId))
+                .isInstanceOf(EntityNotFoundException.class);
+        }
+    }
+
+    @Nested
 @DisplayName("getOrdersByEmail()")
 class GetOrdersByEmail {
     @Test

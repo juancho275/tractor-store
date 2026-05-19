@@ -1,5 +1,6 @@
 package com.tractorstore.order.application;
 
+import com.tractorstore.order.OrderConfirmationApi;
 import com.tractorstore.order.application.dto.CreateOrderRequest;
 import com.tractorstore.order.application.dto.OrderResponse;
 import com.tractorstore.order.application.event.OrderPlaced;
@@ -32,7 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Service
 @Transactional(readOnly = true)
-public class OrderService {
+public class OrderService implements OrderConfirmationApi {
+
+    private static final String APP_TAG = "tractor-store-backend";
 
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -86,7 +89,7 @@ public class OrderService {
         Order saved = orderRepository.save(order);
 
         meterRegistry.counter("orders.placed",
-            "app", "tractor-store-backend"
+            "app", APP_TAG
         ).increment();
 
         // Publish domain event — Spring Modulith stores in event_publication
@@ -123,6 +126,15 @@ public class OrderService {
     public List<OrderResponse> getOrdersByEmail(String email) {
         return orderRepository.findByCustomerEmail(email)
             .stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public void processPaymentConfirmation(UUID id) {
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Order not found: " + id));
+        order.confirm();
+        orderRepository.save(order);
     }
 
     @Transactional

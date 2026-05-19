@@ -1,0 +1,571 @@
+{
+  "info": {
+    "name": "Tractor Store API",
+    "_postman_id": "tractor-store-api-v1",
+    "description": "API completa del backend Spring Boot. El login auto-guarda el token en {{token}}. Rutas marcadas con 🔒 requieren JWT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",   "value": "http://localhost:8080", "type": "string" },
+    { "key": "token",     "value": "",                      "type": "string" },
+    { "key": "sessionId", "value": "session-test-001",      "type": "string" },
+    { "key": "productId", "value": "",                      "type": "string" },
+    { "key": "variantId", "value": "",                      "type": "string" },
+    { "key": "orderId",   "value": "",                      "type": "string" }
+  ],
+  "auth": { "type": "noauth" },
+  "item": [
+
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login (admin) → guarda token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('✅ Token guardado:', json.token.substring(0,30) + '...');",
+                  "}",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiene token', () => pm.expect(json.token).to.be.a('string'));",
+                  "pm.test('Role es ADMIN', () => pm.expect(json.role).to.eql('ADMIN'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@tractorstore.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Login (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Role es USER', () => pm.expect(json.role).to.eql('USER'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@tractorstore.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Login — credenciales incorrectas (espera 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Título Authentication Failed', () => {",
+                  "    pm.expect(pm.response.json().title).to.eql('Authentication Failed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@tractorstore.com\",\n  \"password\": \"wrong\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Register — nuevo usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Role es USER', () => pm.expect(pm.response.json().role).to.eql('USER'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "Register — email duplicado (espera 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@tractorstore.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📦 Catalog (público)",
+      "item": [
+        {
+          "name": "Listar productos (paginado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test('Tiene content[]', () => pm.expect(json.content).to.be.an('array'));",
+                  "if (json.content.length > 0) {",
+                  "    pm.collectionVariables.set('productId', json.content[0].id);",
+                  "    console.log('productId guardado:', json.content[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/products?page=0&size=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","catalog","products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar productos (?q=tractor)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/products?q=tractor",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","catalog","products"],
+              "query": [{ "key": "q", "value": "tractor" }]
+            }
+          }
+        },
+        {
+          "name": "Detalle de producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "if (json.variants && json.variants.length > 0) {",
+                  "    pm.collectionVariables.set('variantId', json.variants[0].id);",
+                  "    console.log('variantId guardado:', json.variants[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/catalog/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api","catalog","products","{{productId}}"] }
+          }
+        },
+        {
+          "name": "Listar categorías",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Es array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/catalog/categories", "host": ["{{baseUrl}}"], "path": ["api","catalog","categories"] }
+          }
+        },
+        {
+          "name": "Categoría por slug",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/catalog/categories/tractores", "host": ["{{baseUrl}}"], "path": ["api","catalog","categories","tractores"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📊 Inventory (GET público / PUT 🔒)",
+      "item": [
+        {
+          "name": "Stock de variante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test('Tiene status de stock', () => pm.expect(json.status).to.be.a('string'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/inventory/{{variantId}}", "host": ["{{baseUrl}}"], "path": ["api","inventory","{{variantId}}"] }
+          }
+        },
+        {
+          "name": "Stock batch",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventory/batch?variantIds={{variantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","inventory","batch"],
+              "query": [{ "key": "variantIds", "value": "{{variantId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Low stock (umbral=5)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventory/low-stock?threshold=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","inventory","low-stock"],
+              "query": [{ "key": "threshold", "value": "5" }]
+            }
+          }
+        },
+        {
+          "name": "🔒 Actualizar stock",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productVariantId\": \"{{variantId}}\",\n  \"quantity\": 50\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/inventory", "host": ["{{baseUrl}}"], "path": ["api","inventory"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🛒 Cart (público, header X-Session-Id)",
+      "item": [
+        {
+          "name": "Obtener / crear carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "pm.test('Tiene sessionId', () => pm.expect(json.sessionId).to.be.a('string'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-Session-Id", "value": "{{sessionId}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] }
+          }
+        },
+        {
+          "name": "Agregar item al carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var json = pm.response.json();",
+                  "if (json.items && json.items.length > 0) {",
+                  "    pm.globals.set('cartItemId', json.items[0].id);",
+                  "    console.log('cartItemId:', json.items[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-Session-Id",  "value": "{{sessionId}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"productVariantId\": \"{{variantId}}\",\n  \"productName\": \"TractorPro X200\",\n  \"variantName\": \"Rojo\",\n  \"unitPrice\": 45000000,\n  \"quantity\": 1,\n  \"imageUrl\": null\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/cart/items", "host": ["{{baseUrl}}"], "path": ["api","cart","items"] }
+          }
+        },
+        {
+          "name": "Actualizar cantidad de item",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "X-Session-Id", "value": "{{sessionId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}?quantity=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","cart","items","{{cartItemId}}"],
+              "query": [{ "key": "quantity", "value": "2" }]
+            }
+          }
+        },
+        {
+          "name": "Eliminar item del carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "X-Session-Id", "value": "{{sessionId}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}", "host": ["{{baseUrl}}"], "path": ["api","cart","items","{{cartItemId}}"] }
+          }
+        },
+        {
+          "name": "Vaciar carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "X-Session-Id", "value": "{{sessionId}}" }],
+            "url": { "raw": "{{baseUrl}}/api/cart", "host": ["{{baseUrl}}"], "path": ["api","cart"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📋 Orders",
+      "item": [
+        {
+          "name": "Crear orden / checkout (público)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('orderId', json.id);",
+                  "    console.log('orderId guardado:', json.id);",
+                  "    console.log('orderNumber:', json.orderNumber);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerEmail\": \"cliente@test.com\",\n  \"customerName\": \"Juan Prueba\",\n  \"shippingAddress\": \"Calle 123 #45-67, Bogotá\",\n  \"items\": [\n    {\n      \"productVariantId\": \"{{variantId}}\",\n      \"productName\": \"TractorPro X200\",\n      \"variantName\": \"Rojo\",\n      \"unitPrice\": 45000000,\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "🔒 Obtener orden por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}"] }
+          }
+        },
+        {
+          "name": "🔒 Obtener orden por número",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/orders/number/TS-0001-1001", "host": ["{{baseUrl}}"], "path": ["api","orders","number","TS-0001-1001"] }
+          }
+        },
+        {
+          "name": "🔒 Órdenes por email de cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Es array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/orders/customer/cliente@test.com", "host": ["{{baseUrl}}"], "path": ["api","orders","customer","cliente@test.com"] }
+          }
+        },
+        {
+          "name": "🔒 Confirmar orden",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}/confirm", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}","confirm"] }
+          }
+        },
+        {
+          "name": "🔒 Cancelar orden",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}","cancel"] }
+          }
+        },
+        {
+          "name": "Sin token → espera 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401 sin JWT', () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["api","orders","{{orderId}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🩺 Health / Swagger",
+      "item": [
+        {
+          "name": "Actuator health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator","health"] }
+          }
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api-docs", "host": ["{{baseUrl}}"], "path": ["api-docs"] }
+          }
+        }
+      ]
+    }
+
+  ]
+}

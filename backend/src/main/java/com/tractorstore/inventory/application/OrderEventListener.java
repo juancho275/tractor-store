@@ -43,15 +43,8 @@ public class OrderEventListener {
         log.info("Deducting stock for order: {}", event.orderNumber());
 
         event.items().forEach(item -> {
-            try {
-                inventoryService.deduct(item.productVariantId(), item.quantity());
-                log.debug("Stock deducted: variant={} qty={}",
-                    item.productVariantId(), item.quantity());
-            } catch (Exception e) {
-                log.error("Failed to deduct stock for variant {}: {}",
-                    item.productVariantId(), e.getMessage());
-                throw e; // Re-throw para que Spring Modulith reintente
-            }
+            inventoryService.deduct(item.productVariantId(), item.quantity());
+            log.debug("Stock deducted: variant={} qty={}", item.productVariantId(), item.quantity());
         });
 
         log.info("Stock deduction complete for order: {}", event.orderNumber());

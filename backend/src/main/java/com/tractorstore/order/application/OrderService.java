@@ -1,5 +1,6 @@
 package com.tractorstore.order.application;
 
+import com.tractorstore.order.OrderConfirmationApi;
 import com.tractorstore.order.application.dto.CreateOrderRequest;
 import com.tractorstore.order.application.dto.OrderResponse;
 import com.tractorstore.order.application.event.OrderPlaced;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Service
 @Transactional(readOnly = true)
-public class OrderService {
+public class OrderService implements OrderConfirmationApi {
 
     private final OrderRepository orderRepository;
     private final ApplicationEventPublisher eventPublisher;

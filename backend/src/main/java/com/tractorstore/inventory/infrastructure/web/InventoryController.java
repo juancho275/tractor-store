@@ -5,7 +5,6 @@ import com.tractorstore.inventory.application.dto.StockResponse;
 import com.tractorstore.inventory.application.dto.StockUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +34,8 @@ public class InventoryController {
 
     @GetMapping("/{variantId}")
     @Operation(summary = "Get stock for a variant")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Stock found"),
-        @ApiResponse(responseCode = "404", description = "Variant stock not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Stock found")
+    @ApiResponse(responseCode = "404", description = "Variant stock not found")
     public ResponseEntity<StockResponse> getStock(@PathVariable UUID variantId) {
         return ResponseEntity.ok(inventoryService.getStock(variantId));
     }
@@ -63,11 +60,9 @@ public class InventoryController {
 
     @PutMapping
     @Operation(summary = "Update stock quantity for a variant")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Stock updated"),
-        @ApiResponse(responseCode = "400", description = "Validation error"),
-        @ApiResponse(responseCode = "404", description = "Variant not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Stock updated")
+    @ApiResponse(responseCode = "400", description = "Validation error")
+    @ApiResponse(responseCode = "404", description = "Variant not found")
     public ResponseEntity<StockResponse> updateStock(
         @Valid @RequestBody StockUpdateRequest request
     ) {

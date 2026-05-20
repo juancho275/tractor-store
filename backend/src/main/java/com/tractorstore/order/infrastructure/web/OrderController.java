@@ -5,7 +5,6 @@ import com.tractorstore.order.application.dto.CreateOrderRequest;
 import com.tractorstore.order.application.dto.OrderResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,11 +30,9 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Create a new order (checkout)")
-    @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Order created successfully"),
-        @ApiResponse(responseCode = "400", description = "Validation error in order request"),
-        @ApiResponse(responseCode = "422", description = "Insufficient stock or order cannot be processed")
-    })
+    @ApiResponse(responseCode = "201", description = "Order created successfully")
+    @ApiResponse(responseCode = "400", description = "Validation error in order request")
+    @ApiResponse(responseCode = "422", description = "Insufficient stock or order cannot be processed")
     public ResponseEntity<OrderResponse> createOrder(
         @Valid @RequestBody CreateOrderRequest request
     ) {
@@ -45,20 +42,16 @@ public class OrderController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Order found"),
-        @ApiResponse(responseCode = "404", description = "Order not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Order found")
+    @ApiResponse(responseCode = "404", description = "Order not found")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.getOrder(id));
     }
 
     @GetMapping("/number/{orderNumber}")
     @Operation(summary = "Get order by order number")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Order found"),
-        @ApiResponse(responseCode = "404", description = "Order not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Order found")
+    @ApiResponse(responseCode = "404", description = "Order not found")
     public ResponseEntity<OrderResponse> getOrderByNumber(
         @PathVariable String orderNumber
     ) {
@@ -76,22 +69,18 @@ public class OrderController {
 
     @PutMapping("/{id}/confirm")
     @Operation(summary = "Confirm an order")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Order confirmed"),
-        @ApiResponse(responseCode = "404", description = "Order not found"),
-        @ApiResponse(responseCode = "422", description = "Order cannot be confirmed in its current state")
-    })
+    @ApiResponse(responseCode = "200", description = "Order confirmed")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    @ApiResponse(responseCode = "422", description = "Order cannot be confirmed in its current state")
     public ResponseEntity<OrderResponse> confirmOrder(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.confirmOrder(id));
     }
 
     @PutMapping("/{id}/cancel")
     @Operation(summary = "Cancel an order")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Order cancelled"),
-        @ApiResponse(responseCode = "404", description = "Order not found"),
-        @ApiResponse(responseCode = "422", description = "Order cannot be cancelled in its current state")
-    })
+    @ApiResponse(responseCode = "200", description = "Order cancelled")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    @ApiResponse(responseCode = "422", description = "Order cannot be cancelled in its current state")
     public ResponseEntity<OrderResponse> cancelOrder(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.cancelOrder(id));
     }

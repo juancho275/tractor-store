@@ -4,7 +4,6 @@ import com.tractorstore.catalog.application.CatalogService;
 import com.tractorstore.catalog.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,10 +44,8 @@ public class CatalogController {
      */
     @GetMapping("/products")
     @Operation(summary = "List products", description = "Returns paginated active products, optionally filtered by category or search query")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Products returned successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    @ApiResponse(responseCode = "200", description = "Products returned successfully")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public ResponseEntity<Page<ProductSummaryResponse>> getProducts(
         @PageableDefault(size = 12, sort = "name") Pageable pageable,
         @RequestParam(required = false) UUID category,
@@ -71,11 +68,9 @@ public class CatalogController {
      */
     @GetMapping("/products/{id}")
     @Operation(summary = "Get product detail", description = "Returns a single product with all its variants")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Product found"),
-        @ApiResponse(responseCode = "404", description = "Product not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    @ApiResponse(responseCode = "200", description = "Product found")
+    @ApiResponse(responseCode = "404", description = "Product not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable UUID id) {
         return ResponseEntity.ok(catalogService.getProduct(id));
     }
@@ -100,10 +95,8 @@ public class CatalogController {
      */
     @GetMapping("/categories/{slug}")
     @Operation(summary = "Get category by slug", description = "Returns a single category by its URL slug")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Category found"),
-        @ApiResponse(responseCode = "404", description = "Category not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Category found")
+    @ApiResponse(responseCode = "404", description = "Category not found")
     public ResponseEntity<CategoryResponse> getCategoryBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(catalogService.getCategoryBySlug(slug));
     }

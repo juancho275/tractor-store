@@ -196,8 +196,6 @@
                     <exclude>**/application/dto/**</exclude>
                     <exclude>**/application/event/**</exclude>
                     <exclude>**/TractorStoreApplication.class</exclude>
-                    <exclude>**/auth/application/DataInitializer.class</exclude>
-                    <exclude>**/shared/security/JwtAuthenticationFilter.class</exclude>
                 </excludes>
             </configuration>
         </execution>
@@ -212,8 +210,6 @@
                     <exclude>**/application/dto/**</exclude>
                     <exclude>**/application/event/**</exclude>
                     <exclude>**/TractorStoreApplication.class</exclude>
-                    <exclude>**/auth/application/DataInitializer.class</exclude>
-                    <exclude>**/shared/security/JwtAuthenticationFilter.class</exclude>
                 </excludes>
                 <rules>
                     <rule>

@@ -4,13 +4,12 @@ import com.tractorstore.catalog.application.CatalogService;
 import com.tractorstore.catalog.application.dto.CategoryResponse;
 import com.tractorstore.catalog.application.dto.ProductResponse;
 import com.tractorstore.catalog.application.dto.ProductSummaryResponse;
+import com.tractorstore.shared.BaseControllerTest;
+import com.tractorstore.shared.WebMvcSecurityTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,22 +20,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(
-    controllers = CatalogController.class,
-    excludeAutoConfiguration = {
-        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
-    }
-)
-@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
+@WebMvcSecurityTest(controllers = CatalogController.class)
 @DisplayName("CatalogController")
-class CatalogControllerTest {
+class CatalogControllerTest extends BaseControllerTest {
 
-    @Autowired MockMvc mockMvc;
     @MockitoBean CatalogService catalogService;
-    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
-    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private final UUID productId = UUID.randomUUID();
     private final UUID categoryId = UUID.randomUUID();

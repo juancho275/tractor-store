@@ -5,35 +5,27 @@ import com.tractorstore.auth.application.AuthService;
 import com.tractorstore.auth.application.dto.AuthResponse;
 import com.tractorstore.auth.application.dto.LoginRequest;
 import com.tractorstore.auth.application.dto.RegisterRequest;
+import com.tractorstore.shared.BaseControllerTest;
+import com.tractorstore.shared.WebMvcSecurityTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AuthController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@WebMvcSecurityTest(controllers = AuthController.class)
 @DisplayName("AuthController — login and register endpoints")
-class AuthControllerTest {
+class AuthControllerTest extends BaseControllerTest {
 
-    @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean AuthService authService;
-
-    // JwtAuthenticationFilter and JwtService are in SecurityConfig — must be mocked for @WebMvcTest
     @MockitoBean com.tractorstore.shared.security.JwtService jwtService;
-    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
-    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private static final AuthResponse SAMPLE_RESPONSE =
         new AuthResponse("eyJhbGciOiJIUzI1NiJ9.sample", "admin@tractorstore.com", "ADMIN", 86400000L);

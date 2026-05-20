@@ -3,11 +3,10 @@ package com.tractorstore.inventory.infrastructure.web;
 import com.tractorstore.inventory.application.InventoryService;
 import com.tractorstore.inventory.application.dto.StockResponse;
 import com.tractorstore.inventory.application.dto.StockResponse.StockStatus;
+import com.tractorstore.shared.BaseControllerTest;
+import com.tractorstore.shared.WebMvcSecurityTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,19 +16,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = InventoryController.class,
-    excludeAutoConfiguration = {
-        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
-    })
-@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
-class InventoryControllerTest {
+@WebMvcSecurityTest(controllers = InventoryController.class)
+class InventoryControllerTest extends BaseControllerTest {
 
-    @Autowired MockMvc mockMvc;
     @MockitoBean InventoryService inventoryService;
-    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
-    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private final UUID variantId = UUID.randomUUID();
 

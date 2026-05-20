@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,7 +27,7 @@ class GlobalExceptionHandlerTest {
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(problem.getTitle()).isEqualTo("Resource Not Found");
         assertThat(problem.getDetail()).isEqualTo("Product not found");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/not-found");
+        assertThat(problem.getType()).hasToString("/errors/not-found");
     }
 
     @Test
@@ -57,7 +56,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(problem.getTitle()).isEqualTo("Validation Failed");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/validation");
+        assertThat(problem.getType()).hasToString("/errors/validation");
         assertThat(problem.getProperties()).containsKey("errors");
     }
 
@@ -68,7 +67,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(problem.getTitle()).isEqualTo("Bad Request");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/bad-request");
+        assertThat(problem.getType()).hasToString("/errors/bad-request");
     }
 
     @Test
@@ -78,7 +77,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
         assertThat(problem.getTitle()).isEqualTo("Unprocessable Entity");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/unprocessable");
+        assertThat(problem.getType()).hasToString("/errors/unprocessable");
     }
 
     @Test
@@ -88,7 +87,7 @@ class GlobalExceptionHandlerTest {
 
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(problem.getTitle()).isEqualTo("Conflict");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/conflict");
+        assertThat(problem.getType()).hasToString("/errors/conflict");
     }
 
     @Test
@@ -99,6 +98,6 @@ class GlobalExceptionHandlerTest {
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(problem.getTitle()).isEqualTo("Internal Server Error");
         assertThat(problem.getDetail()).isEqualTo("An unexpected error occurred");
-        assertThat(problem.getType().toString()).isEqualTo("/errors/internal");
+        assertThat(problem.getType()).hasToString("/errors/internal");
     }
 }

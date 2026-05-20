@@ -4,7 +4,6 @@ import com.tractorstore.cart.application.CartService;
 import com.tractorstore.cart.application.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,8 @@ public class CartController {
 
     @PostMapping("/items")
     @Operation(summary = "Add item to cart")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Item added to cart"),
-        @ApiResponse(responseCode = "400", description = "Validation error in request body")
-    })
+    @ApiResponse(responseCode = "200", description = "Item added to cart")
+    @ApiResponse(responseCode = "400", description = "Validation error in request body")
     public ResponseEntity<CartResponse> addItem(
         @RequestHeader("X-Session-Id") String sessionId,
         @Valid @RequestBody CartItemRequest request
@@ -51,10 +48,8 @@ public class CartController {
 
     @PutMapping("/items/{itemId}")
     @Operation(summary = "Update item quantity")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Quantity updated"),
-        @ApiResponse(responseCode = "404", description = "Cart item not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Quantity updated")
+    @ApiResponse(responseCode = "404", description = "Cart item not found")
     public ResponseEntity<CartResponse> updateItem(
         @RequestHeader("X-Session-Id") String sessionId,
         @PathVariable UUID itemId,
@@ -65,10 +60,8 @@ public class CartController {
 
     @DeleteMapping("/items/{itemId}")
     @Operation(summary = "Remove item from cart")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Item removed"),
-        @ApiResponse(responseCode = "404", description = "Cart item not found")
-    })
+    @ApiResponse(responseCode = "200", description = "Item removed")
+    @ApiResponse(responseCode = "404", description = "Cart item not found")
     public ResponseEntity<CartResponse> removeItem(
         @RequestHeader("X-Session-Id") String sessionId,
         @PathVariable UUID itemId

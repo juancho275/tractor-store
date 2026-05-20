@@ -131,6 +131,7 @@ jobs:
             -Dsonar.organization=juancho275 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.qualitygate.wait=true \
             --no-transfer-progress
 
   # ── Stage 4: Frontend Build ─────────────────────────────────

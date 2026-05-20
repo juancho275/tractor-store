@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -86,5 +87,19 @@ class NotificationServiceTest {
 
         // SMTP sender must NOT be touched when API key is configured
         verifyNoInteractions(mockSender);
+    }
+
+    @Test
+    @DisplayName("restores interrupt flag when Resend API call is interrupted")
+    void sendOrderConfirmation_resendInterrupted_setsInterruptFlag() {
+        NotificationService service = new NotificationService(null);
+        ReflectionTestUtils.setField(service, "from", "onboarding@resend.dev");
+        ReflectionTestUtils.setField(service, "resendApiKey", "test-api-key");
+
+        Thread.currentThread().interrupt(); // cause HttpClient.send() to throw InterruptedException
+        assertDoesNotThrow(() -> service.sendOrderConfirmation(sampleEvent()));
+
+        // catch block must restore the interrupt flag via Thread.currentThread().interrupt()
+        assertThat(Thread.interrupted()).isTrue(); // also clears flag for next tests
     }
 }

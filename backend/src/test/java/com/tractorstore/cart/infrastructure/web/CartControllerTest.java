@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tractorstore.cart.application.CartService;
 import com.tractorstore.cart.application.dto.CartItemRequest;
 import com.tractorstore.cart.application.dto.CartResponse;
+import com.tractorstore.shared.BaseControllerTest;
+import com.tractorstore.shared.WebMvcSecurityTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,20 +21,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = CartController.class,
-    excludeAutoConfiguration = {
-        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class
-    })
-@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
-class CartControllerTest {
+@WebMvcSecurityTest(controllers = CartController.class)
+class CartControllerTest extends BaseControllerTest {
 
-    @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
     @MockitoBean CartService cartService;
-    @MockitoBean com.tractorstore.shared.security.JwtAuthenticationFilter jwtAuthenticationFilter;
-    @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-    @MockitoBean io.micrometer.core.instrument.MeterRegistry meterRegistry;
 
     private static final String SESSION = "test-session-123";
 

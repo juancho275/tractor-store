@@ -34,6 +34,7 @@ public class DataInitializer {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @SuppressWarnings("java:S2068") // demo-only seeder; defaults are hashed by PasswordEncoder and overridable via env vars
     @EventListener(ApplicationReadyEvent.class)
     public void seed() {
         if (userRepository.existsByEmail("admin@tractorstore.com")) {
